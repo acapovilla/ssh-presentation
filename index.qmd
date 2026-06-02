@@ -1,0 +1,16 @@
+---
+title: "Secure Shell Protocol"
+subtitle: "Capa de aplicación - Redes II"
+date: 06/08/2026
+date-format: "DD/MM/YYYY"
+# institute: "FICH - UNL"
+format:
+    revealjs:
+        theme: dark
+        footer: "Facultad de Ingeniería y Ciencias Hídricas - Universidad Nacional del Litoral"
+        menu: false
+        slide-number: c
+        history: false
+---
+
+## Secure Shell Protocol
