@@ -6,3 +6,8 @@ project:
     browser: false
 
 lang: es
+
+format:
+  html:
+    mermaid:
+      theme: dark
