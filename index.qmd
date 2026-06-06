@@ -29,7 +29,6 @@ format:
 ### 4. Demos y Casos de Uso (Túneles y X11)
 ### 5. Resumen y Conclusiones
 
-# ¿Qué es SSH? {.center}
 
 {{< include intro-ssh.qmd >}}
 
