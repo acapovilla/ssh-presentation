@@ -1,0 +1,66 @@
+## El mundo antes de SSH
+
+Antes de SSH, la administración remota usaba **Telnet** y **rsh**.  
+El problema: todo viajaba en **texto plano** por la red.
+
+```
+Usuario: root
+Password: mipassword123       ← visible para cualquiera con Wireshark
+```
+
+::: {.fragment}
+En 1995, **Tatu Ylönen** desarrolló SSH como respuesta a un ataque de sniffing  
+en la red de su universidad.
+:::
+
+::: {.fragment}
+SSH garantiza tres propiedades fundamentales:
+
+| Propiedad | ¿Qué significa? |
+|-----------|-----------------|
+| **Confidencialidad** | Los datos viajan cifrados — nadie puede leerlos |
+| **Integridad** | No se pueden modificar en tránsito sin detección |
+| **Autenticación** | Verificás la identidad de ambos extremos |
+:::
+
+## SSH en la pila de protocolos
+
+SSH no es un protocolo único — son **tres capas** definidas en los RFC 4251–4254.
+
+::: {.columns}
+::: {.column width="50%"}
+```{mermaid}
+%%{init: {'fontSize': 13, 'theme': 'dark'}}%%
+flowchart TD
+    L4["SSH Connection Protocol
+    shells · túneles · SCP · SFTP
+    RFC 4254"]
+    L3["SSH User Authentication
+    password · publickey · cert
+    RFC 4252"]
+    L2["SSH Transport Layer
+    cifrado · integridad · compresión
+    RFC 4253"]
+    L1["TCP — Puerto 22
+    orientado a la conexión"]
+
+    L4 --> L3 --> L2 --> L1
+
+    style L4 fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+    style L3 fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+    style L2 fill:#14532d,stroke:#22c55e,color:#86efac
+    style L1 fill:#3b0764,stroke:#a855f7,color:#d8b4fe
+```
+:::
+::: {.column width="20%"}
+**Transport Layer** establece el canal cifrado.  
+Negocia algoritmos y hace el intercambio de claves.
+
+**User Authentication** verifica al cliente.  
+Es la capa que distingue password de publickey.
+
+**Connection Protocol** multiplexa canales lógicos  
+sobre el canal ya cifrado — una sola conexión TCP  
+puede tener simultáneamente una shell, un túnel y una transferencia.
+:::
+:::

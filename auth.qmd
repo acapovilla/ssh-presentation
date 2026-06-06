@@ -1,0 +1,151 @@
+## Dos métodos, una decisión
+
+::: {.columns}
+::: {.column width="50%"}
+### 🔑 Password
+
+- La contraseña viaja **cifrada** dentro del canal SSH
+- El servidor la compara contra `/etc/shadow`
+- Simple, pero **vulnerable a fuerza bruta**
+- Fácil de configurar mal
+
+```bash
+ssh usuario@servidor
+# Password: ••••••••
+```
+
+> Recomendado: deshabilitar  
+> y usar solo claves.
+:::
+::: {.column width="50%"}
+### 🗝️ Clave pública
+
+- Nunca se transmite la clave privada
+- El servidor tiene solo la clave **pública**
+- El cliente **firma un challenge** con su privada
+- El servidor **verifica** la firma
+
+```bash
+ssh -i ~/.ssh/mi_key usuario@servidor
+# sin contraseña — automático
+```
+
+> Recomendado para **todo**  
+> entorno de producción.
+:::
+:::
+
+## Cómo funciona la autenticación por clave pública
+
+```{mermaid}
+%%{init: {'fontSize': 13, 'theme': 'dark'}}%%
+sequenceDiagram
+    autonumber
+    participant C as 💻 Cliente
+    participant S as 🖧 Servidor
+
+    note over S: ~/.ssh/authorized_keys
+    note over C: ~/.ssh/id_ed25519 (privada)
+
+    C->>S: USERAUTH_REQUEST — publickey (query)
+    note right of S: ¿está esta clave en authorized_keys?
+    S->>C: USERAUTH_PK_OK — procedé
+    note left of C: firma un challenge con<br/>su clave privada 🔑
+    C->>S: USERAUTH_REQUEST — publickey + firma
+    note right of S: verifica firma con<br/>clave pública ✓
+    S->>C: USERAUTH_SUCCESS ✅
+```
+
+## Archivos, formatos y comandos
+
+::: {.columns}
+::: {.column width="55%"}
+**Generar un par de claves**
+
+```bash
+# Ed25519 — recomendado (rápido y seguro)
+ssh-keygen -t ed25519 -C "tu@mail.com"
+
+# RSA 4096 — compatibilidad con sistemas viejos
+ssh-keygen -t rsa -b 4096 -C "tu@mail.com"
+
+# Con nombre personalizado
+ssh-keygen -t ed25519 -f ~/.ssh/servidor_prod
+```
+
+**Copiar al servidor**
+
+```bash
+# Automático
+ssh-copy-id -i ~/.ssh/id_ed25519.pub user@host
+
+# Manual
+cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+```
+:::
+::: {.column width="45%"}
+**Tipos de archivos**
+
+| Archivo | Ext | Formato |
+|---------|-----|---------|
+| Clave privada | sin ext / `.pem` | PEM base64 |
+| Clave pública | `.pub` | OpenSSH |
+| AWS key pair | `.pem` | PEM RSA |
+
+**Clave pública** — una línea:
+```
+ssh-ed25519 AAAAC3Nz... tu@mail
+```
+
+**Clave privada** — bloque PEM:
+```
+-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAA...
+-----END OPENSSH PRIVATE KEY-----
+```
+:::
+:::
+
+## Hostinger vs AWS — diferencias prácticas
+
+::: {.columns}
+::: {.column width="50%"}
+**Hostinger VPS**
+
+```bash
+# 1. Generás la key localmente
+ssh-keygen -t ed25519 -f ~/.ssh/hostinger
+
+# 2. Pegás hostinger.pub en el panel web
+#    Hostinger → VPS → SSH Keys
+
+# 3. Conectás
+ssh -i ~/.ssh/hostinger root@IP
+```
+
+✅ Si perdés la key → regenerás desde el panel  
+✅ Usuario `root` por defecto  
+✅ Formato OpenSSH estándar
+:::
+::: {.column width="50%"}
+**AWS EC2**
+
+```bash
+# 1. Crear Key Pair en consola AWS
+#    EC2 → Key Pairs → Create
+
+# 2. Se descarga mi-key.pem — ÚNICA VEZ ⚠️
+
+# 3. Ajustar permisos (obligatorio)
+chmod 400 ~/mi-key.pem
+
+# 4. Conectar
+ssh -i ~/mi-key.pem ec2-user@IP
+```
+
+⚠️ Si perdés la key → recrear la instancia  
+⚠️ Usuario varía: `ec2-user`, `ubuntu`, `admin`  
+⚠️ Formato `.pem` (PEM RSA)
+:::
+:::

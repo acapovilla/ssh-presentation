@@ -1,0 +1,128 @@
+## Túnel SSH — la idea
+
+Un túnel SSH **encapsula cualquier protocolo** dentro del canal cifrado.  
+El servicio destino solo ve tráfico local — nunca está expuesto directamente.
+
+```{mermaid}
+%%{init: {'fontSize': 13, 'theme': 'dark'}}%%
+flowchart LR
+    subgraph LOCAL["Tu máquina"]
+        C["💻 localhost:3390"]
+    end
+    subgraph NET["Internet"]
+        T["🔒 SSH cifrado\nAES-256-CTR"]
+    end
+    subgraph REMOTE["Servidor remoto"]
+        S["🖧 RDP :3389\n(no expuesto)"]
+    end
+
+    C -->|"-L 3390:localhost:3389"| T
+    T --> S
+
+    style T fill:#0f2a1a,stroke:#22c55e,color:#86efac
+    style S fill:#1e1b4b,stroke:#6366f1,color:#a5b4fc
+```
+
+```bash
+# Abrir el túnel
+ssh -L 3390:localhost:3389 usuario@servidor
+
+# Conectar cliente RDP a localhost:3390
+# Transferir archivos
+scp archivo.txt usuario@servidor:/ruta/
+rsync -avz ./carpeta/ usuario@servidor:/destino/
+```
+
+## Local Port Forwarding — Jump Host
+
+Acceder a servicios en una **red privada** a través de un servidor intermedio.
+
+::: {.columns}
+::: {.column width="60%"}
+```{mermaid}
+%%{init: {'fontSize': 13, 'theme': 'dark'}}%%
+flowchart LR
+    subgraph LOCAL["Tu máquina"]
+        C["💻 localhost:5432"]
+    end
+    subgraph DMZ["DMZ / Acceso público"]
+        J["🖧 Jump Host\n:22"]
+    end
+    subgraph PRIV["Red privada"]
+        DB["🗄️ DB Server\n:5432"]
+    end
+
+    C -->|"SSH -L cifrado"| J
+    J -->|"red interna"| DB
+
+    style J fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
+    style DB fill:#3b0764,stroke:#a855f7,color:#d8b4fe
+```
+:::
+::: {.column width="40%"}
+```bash
+# Abrir el túnel
+ssh -L 5432:db.interno:5432 \
+    user@jump-host
+
+# Conectar como si fuera local
+psql -h localhost -p 5432 \
+     -U admin midb
+```
+
+También podés definirlo en `~/.ssh/config`:
+
+```
+Host prod-db
+  HostName jump.empresa.com
+  LocalForward 5432 db.interno:5432
+```
+:::
+:::
+
+## X11 Forwarding
+
+Ejecutar **aplicaciones gráficas** del servidor y verlas en tu pantalla local.
+
+::: {.columns}
+::: {.column width="50%"}
+```{mermaid}
+%%{init: {'fontSize': 12, 'theme': 'dark'}}%%
+sequenceDiagram
+    participant C as 💻 Cliente (X Server)
+    participant S as 🖧 Servidor
+
+    C->>S: ssh -X usuario@servidor
+    note right of S: X11Forwarding yes
+    S->>C: DISPLAY=localhost:10.0
+    S->>C: Datos X11 (ventana, render)
+    C-->>S: Inputs (mouse, teclado)
+    note over C,S: La ventana aparece en tu pantalla 🖼️
+```
+
+| Flag | Modo | Riesgo |
+|------|------|--------|
+| `-X` | Untrusted | Bajo |
+| `-Y` | Trusted | Medio ⚠️ |
+:::
+::: {.column width="50%"}
+```bash
+# Conectar con X11
+ssh -X usuario@servidor
+
+# Probar con un reloj
+ssh -X usuario@servidor xclock
+
+# Abrir Firefox remoto
+ssh -X usuario@servidor firefox
+```
+
+> 📸 screenshot / gif de ventana remota
+
+::: {.callout-warning}
+`-Y` le da a la app remota acceso completo  
+al display local. Solo usarlo en servidores  
+de absoluta confianza.
+:::
+:::
+:::
