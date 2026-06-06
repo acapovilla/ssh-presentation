@@ -1,146 +1,178 @@
-## ¿Qué pasa cuando hacés `ssh user@host`?
+# Capa de transporte
 
-Antes de cifrar cualquier dato, cliente y servidor negocian **en texto claro**.
+Antes de poder cifrar la conexión, cliente y servidor negocian utilizando **texto plano**
 
-> Esto es exactamente lo que capturás con Wireshark en `tcp.port == 22`.
+## Inicio de la comunicación {auto-animate="true"}
 
-Los primeros paquetes son **legibles** — a partir del `NEWKEYS`, ya no.
 
-## Handshake paso a paso {auto-animate=true}
+::: {.columns}
+::: {.column}
+
+- [Ejemplo]{.underline}: El usuario inicia la sesión mediante el comando
+```bash {code-line-numbers="false"}
+    $ ssh username@host
+```
+
+<br>
+
+![](figs/handshake-1.png)
+
+
+:::
+::: {.column}
 
 ```{mermaid}
-%%{init: {'fontSize': 13, 'theme': 'dark'}}%%
+%%| fig-align: center
+---
+displayMode: compact
+config:
+  htmlLabels: false
+---
+
+
 sequenceDiagram
     autonumber
     participant C as 💻 Cliente
     participant S as 🖧 Servidor
 
-    rect rgb(10, 80, 80)
-        note over C,S: Fase 1 · Conexión TCP (Puerto 22)
+    rect rgb(31, 119, 180)
+        note over C,S: Fase 1: Conexión TCP
         C->>S: SYN
         S-->>C: SYN-ACK
         C->>S: ACK
     end
 ```
 
-## Handshake paso a paso {auto-animate=true}
+
+:::
+:::
+
+
+
+## Intercambios de versión {auto-animate="true"}
+
+
+::: {.columns}
+::: {.column}
+
+- Inicia el proceso de intercambio entre cliente y servidor `SSH`
+
+
+:::
+::: {.column}
 
 ```{mermaid}
-%%{init: {'fontSize': 13, 'theme': 'dark'}}%%
+%%| fig-align: center
+---
+displayMode: compact
+config:
+  htmlLabels: false
+---
+
+
 sequenceDiagram
     autonumber
     participant C as 💻 Cliente
     participant S as 🖧 Servidor
 
-    rect rgb(10, 80, 80)
-        note over C,S: Fase 1 · Conexión TCP (Puerto 22)
-        C->>S: SYN
-        S-->>C: SYN-ACK
-        C->>S: ACK
-    end
-    rect rgb(30, 60, 140)
-        note over C,S: Fase 2 · Intercambio de versiones
-        S-->>C: SSH-2.0-OpenSSH_9.6
-        C->>S: SSH-2.0-OpenSSH_9.6
+    rect rgb(44, 160, 44)
+        note over C,S: Fase 2: Intercambio de versiones
+        C->>S: SSH-2.0-OpenSSH_9.0
+        S-->>C: SSH-2.0-OpenSSH_8.2p1
     end
 ```
 
-## Handshake paso a paso {auto-animate=true}
+
+:::
+:::
+
+
+![](figs/handshake-2.png)
+
+
+
+## Mensajes `SSH_MSG_KEXINIT` {auto-animate="true"}
+
+
+::: {.columns}
+::: {.column}
+
+- Negociación de algoritmos de:
+    - Encriptación
+    - Integridad
+    - Compresión
+
+
+:::
+::: {.column}
 
 ```{mermaid}
-%%{init: {'fontSize': 13, 'theme': 'dark'}}%%
+%%| fig-align: center
+---
+displayMode: compact
+config:
+  htmlLabels: false
+---
+
+
 sequenceDiagram
     autonumber
     participant C as 💻 Cliente
     participant S as 🖧 Servidor
 
-    rect rgb(10, 80, 80)
-        note over C,S: Fase 1 · Conexión TCP (Puerto 22)
-        C->>S: SYN
-        S-->>C: SYN-ACK
-        C->>S: ACK
-    end
-    rect rgb(30, 60, 140)
-        note over C,S: Fase 2 · Intercambio de versiones
-        S-->>C: SSH-2.0-OpenSSH_9.6
-        C->>S: SSH-2.0-OpenSSH_9.6
-    end
-    rect rgb(130, 90, 10)
-        note over C,S: Fase 3 · Negociación de algoritmos
+    rect rgb(214, 39, 40)
+        note over C,S: Fase 3: Negociación de algoritmos
         C->>S: SSH_MSG_KEXINIT
         S-->>C: SSH_MSG_KEXINIT
     end
 ```
 
-## Handshake paso a paso {auto-animate=true .smaller}
+
+:::
+:::
+
+
+![](figs/handshake-3.png)
+
+
+
+## Claves de cifrado {auto-animate="true"}
+
+
+::: {.columns}
+::: {.column}
+
+- Se intercambia el secreto `K` y el hash `H` y se calculan las claves para encriptar la comunicación
+
+> La sesión queda encriptada
+
+:::
+::: {.column}
 
 ```{mermaid}
-%%{init: {'fontSize': 12, 'theme': 'dark'}}%%
+%%| fig-align: center
+---
+displayMode: compact
+config:
+  htmlLabels: false
+---
+
+
 sequenceDiagram
     autonumber
     participant C as 💻 Cliente
     participant S as 🖧 Servidor
 
-    rect rgb(10, 80, 80)
-        note over C,S: Fase 1 · Conexión TCP (Puerto 22)
-        C->>S: SYN
-        S-->>C: SYN-ACK
-        C->>S: ACK
-    end
-    rect rgb(30, 60, 140)
-        note over C,S: Fase 2 · Intercambio de versiones
-        S-->>C: SSH-2.0-OpenSSH_9.6
-        C->>S: SSH-2.0-OpenSSH_9.6
-    end
-    rect rgb(130, 90, 10)
-        note over C,S: Fase 3 · Negociación de algoritmos
-        C->>S: SSH_MSG_KEXINIT
-        S-->>C: SSH_MSG_KEXINIT
-    end
-    rect rgb(15, 100, 50)
-        note over C,S: Fase 4 · Canal cifrado activo
+    rect rgb(148, 103, 189)
+        note over C,S: Fase 4: Canal cifrado activo
         C->>S: SSH_MSG_NEWKEYS
         S-->>C: SSH_MSG_NEWKEYS
     end
 ```
 
-## Wireshark — lo que realmente se ve
 
-::: {.columns}
-::: {.column width="48%"}
-**Filtros clave**
-
-```bash
-# Todos los paquetes SSH
-tcp.port == 22
-
-# Solo el handshake TCP
-tcp.port == 22 && tcp.flags.syn
-
-# Banners de versión (texto claro)
-ssh.protocol
-
-# Negociación de algoritmos
-ssh.message_code == 20
-```
-
-**Qué encontrás en cada paquete**
-
-| # | Info visible |
-|---|-------------|
-| 1–3 | `TCP SYN / SYN-ACK / ACK` |
-| 4–5 | `SSH Protocol` — versión en texto claro |
-| 6–7 | `Key Exchange Init` — algoritmos |
-| 8+ | `Encrypted Packet` — ilegible ✓ |
-:::
-::: {.column width="52%"}
-<!-- REEMPLAZAR con captura real -->
-> 📸 captura Wireshark — primeros paquetes
-
-::: {.callout-note}
-A partir del `SSH_MSG_NEWKEYS`, Wireshark  
-solo puede ver que hay tráfico SSH —  
-no puede descifrar el contenido.
 :::
 :::
-:::
+
+
+![](figs/handshake-4B.png)

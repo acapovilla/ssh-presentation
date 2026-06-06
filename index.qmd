@@ -32,13 +32,10 @@ format:
 
 {{< include intro-ssh.qmd >}}
 
----
-
-# Handshake 
 
 {{< include handshake.qmd >}}
 
----
+
 
 # Autenticación {.center}
 
