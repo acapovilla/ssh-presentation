@@ -4,6 +4,7 @@
 
 - Aplicación:
     - Acceder de forma segura a servicios internos que no están expuestos a internet
+    - Debuggear servicios sin exponer el tráfico
 
 ## Demo 1: Configuración local
 
@@ -27,6 +28,10 @@ ssh -N -i [archivo_identidad] \
 ## Demo 1: Diagrama de red {.smaller}
 
 ![](figs/demo-1.svg)
+
+```bash {code-line-numbers="false"}
+    ssh -N -i [archivo_identidad] -L [puerto_local]:[host_destino]:[puerto_destino] -p [puerto_ssh_remoto] [usuario]@[servidor_SSH]
+```
 
 ```bash {code-line-numbers="false"}
     ssh -N -i ~/.ssh/id_ed25519 -L 8080:nginx:80 -p 22000 ubuntu@54.90.211.82
