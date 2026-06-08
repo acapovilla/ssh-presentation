@@ -73,7 +73,7 @@ ssh-keygen soporta solo SSH-2 (la versión moderna y segura; SSH-1 tiene vulnera
 Con `ssh-keygen -t ed25519` generamos el par localmente.
 La llave privada **nunca sale de la máquina**.
 
-```{.bash code-line-numbers="1|3-4|6-7|9-12|14-16"}
+```bash
 PS> ssh-keygen -t ed25519
 
 # El sistema propone una ruta por defecto — Enter para aceptar:
@@ -112,7 +112,7 @@ El comando genera dos archivos y un fingerprint — explicar cada uno señalando
 Con el par generado, copiamos la llave pública al servidor para
 que `sshd` pueda reconocernos en conexiones futuras.
 
-```{.bash code-line-numbers="1-2|4-6|8-9"}
+```bash
 # Opción A — comando automático (Linux/macOS):
 $ ssh-copy-id umbral@103.199.187.160
 
@@ -157,13 +157,13 @@ PS> ssh -v umbral@103.199.187.160
 
 ### Perspectiva del Cliente — Flujo de negociación
 
-Con la llave registrada en el servidor, la autenticación ocurre sin contraseña — el cliente firma un desafío criptográfico con su llave privada local.
+Con la llave registrada en el servidor, la autenticación ocurre sin contraseña — el servidor firma un desafío criptográfico con su llave privada local.
 
 ```bash
 PS> ssh -v umbral@103.199.187.160
 ```
 
-```{.bash code-line-numbers="2|4-5|7-8|9"}
+```{.bash code-line-numbers="|1-2|4-5|7-11|13-14"}
 # 1. El servidor anuncia los métodos disponibles:
 debug1: Authentications that can continue: publickey,password
 
@@ -172,7 +172,9 @@ debug1: Will attempt key: C:\\Users\\berto/.ssh/id_ed25519 ED25519 SHA256:ztzVw1
 
 # 3. El servidor verifica la firma y acepta:
 debug1: Offering public key: C:\\Users\\berto/.ssh/id_ed25519 ED25519 SHA256:ztzVw1mjwIuJpexHxr75Z0J5GXjhgltVFD1wit4tE6I
+debug3: send packet: type 50
 debug1: Server accepts key: C:\\Users\\berto/.ssh/id_ed25519 ED25519 SHA256:ztzVw1mjwIuJpexHxr75Z0J5GXjhgltVFD1wit4tE6I
+debug3: receive packet: type 60
 
 # 4. Autenticación exitosa — sin contraseña:
 Authenticated to 103.199.187.160 ([103.199.187.160]:22) using "publickey".
@@ -192,7 +194,7 @@ El demonio `sshd` busca la llave en `authorized_keys`, verifica
 la firma criptográfica y delega la apertura de sesión a
 **PAM**— sin que ninguna contraseña viaje por la red.
 
-```{.bash code-line-numbers="2-3|5-6|8-9|11-12"}
+```bash {code-line-numbers="2-3|5-6|8-9|11-12"}
 # 1. sshd busca la llave en authorized_keys:
 sshd[1856155]: debug1: trying public key file /home/umbral/.ssh/authorized_keys
 sshd[1856155]: debug1: /home/umbral/.ssh/authorized_keys:3: matching key found: ED25519 SHA256:ztzVw1mjwIuJpexHxr75Z0J5GXjhgltVFD1wit4tE6I
@@ -268,7 +270,7 @@ Diferencia con Caso 1: en Caso 1 dejás tu llave pública en el servidor (`autho
 
 ### Caso 2: Configurando la CA
 
-```{.bash code-line-numbers="1-2|4-5|7-8|10-11"}
+```bash
 # 1. Generar el par de llaves de la CA en el servidor:
 $ ssh-keygen -t ed25519 -f ssh_ca -C "ca@umbraldesarrollos" -N ""
 
@@ -301,7 +303,7 @@ Sobre el comando del paso 1 — `ssh-keygen -t ed25519 -f ssh_ca -C "ca@umbralde
 
 El cliente genera su par de llaves, nos manda la pública, la firmamos y se la devolvemos como certificado.
 
-```{.bash code-line-numbers="1-2|4-5|7-8|10-11"}
+```bash
 # 1. El cliente manda su llave pública al servidor:
 PS> scp $env:USERPROFILE\.ssh\id_ed25519.pub umbral@103.199.187.160:~
 
@@ -335,7 +337,7 @@ SSH detecta automáticamente el certificado y lo ofrece al servidor.
 PS> ssh -v umbral@103.199.187.160
 ```
 
-```{.bash code-line-numbers="2|4-5|7-9|11-12"}
+```bash
 # 1. El servidor anuncia los métodos disponibles:
 debug1: Authentications that can continue: publickey,password
 
@@ -366,7 +368,7 @@ Noten que el resultado final dice `using "publickey"` — SSH trata los certific
 El servidor verifica la firma de la CA, valida el certificado y
 abre la sesión — sin consultar `authorized_keys`.
 
-```{.bash code-line-numbers="2-3|5-6|8|10-11"}
+```bash
 # 1. La llave pública sola es rechazada — no está en authorized_keys:
 sshd[1947778]: debug1: userauth_pubkey: publickey test pkalg ssh-ed25519 pkblob ED25519 SHA256:ztzVw1m... [preauth]
 sshd[1947778]: Failed publickey for umbral from 181.4.156.91 port 55917 ssh2: ED25519 SHA256:ztzVw1m...
@@ -428,7 +430,7 @@ Dejar que la pregunta quede en el aire. Sin par de llaves, sin CA, sin certifica
 
 ### Perspectiva del Cliente — Flujo de negociación
 
-```{.bash code-line-numbers="2|4-6|8-10"}
+```bash
 # 1. El servidor anuncia los métodos de autenticación disponibles:
 debug1: Authentications that can continue: publickey,password
 
@@ -457,7 +459,7 @@ Cuando ninguna llave funciona, cae a contraseña. Acá aparece la diferencia cla
 El demonio `sshd` delega la validación al módulo **PAM**
 _(Pluggable Authentication Modules)_[^pam] y genera la sesión.
 
-```{.bash code-line-numbers="2|4-5|7-8"}
+```bash
 # 1. El demonio SSH recibe la petición de autenticación:
 sshd[1387699]: debug1: userauth-request for user umbral service ssh-connection method password
 
