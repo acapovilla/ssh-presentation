@@ -43,41 +43,11 @@ format:
 
 ---
 
-# Demos {.center}
+<!-- # Demos {.center}
 
 {{< include demos.qmd >}}
 
----
-
-# Resumen {.center}
-
-## En síntesis
-
-::: {.fragment}
-**SSH resolvió un problema real** — reemplazó Telnet con un canal completamente cifrado.
-:::
-
-::: {.fragment}
-**El handshake negocia todo antes de cifrar** — versión, algoritmos, claves de sesión.  
-Wireshark puede ver esa negociación, pero nada de lo que sigue.
-:::
-
-::: {.fragment}
-**La autenticación por clave pública es la mejor práctica** —  
-el servidor nunca ve tu clave privada, solo verifica una firma.
-:::
-
-::: {.fragment}
-**SSH es más que una shell** — túneles, SCP, RSYNC, SFTP, X11, port forwarding.  
-Un solo protocolo resuelve docenas de casos de uso.
-:::
-
-::: {.fragment}
-```bash
-# Para ver exactamente qué pasa en cada conexión
-ssh -vvv usuario@servidor
-```
-:::
+--- -->
 
 ::: {.fragment}
 ## ¿Preguntas? {.center}

@@ -101,6 +101,7 @@ systemd-logind[695]: New session 1903 of user umbral.
 Para entender qué genera `ssh-keygen -t ed25519`, necesitamos
 distinguir dos niveles:
 
+<!--
 **EdDSA**[^eddsa] _(Edwards-curve Digital Signature Algorithm)_ es el
 **esquema de firma digital** basado en curvas de Edwards torcidas.
 Define cómo se firman y verifican mensajes, pero no especifica
@@ -109,6 +110,7 @@ qué curva usar.
 **Ed25519**[^ed25519] es una **instancia concreta de EdDSA** que usa
 la curva **Curve25519** sobre el campo primo
 $\mathbb{F}_{2^{255}-19}$ — de ahí el nombre.
+--> 
 
 ::: {.incremental}
 - **Llaves cortas** — 256 bits equivalen en seguridad a RSA de 3072 bits.
@@ -120,6 +122,8 @@ $\mathbb{F}_{2^{255}-19}$ — de ahí el nombre.
 :::
 
 ---
+
+## {.smaller visibility="hidden"}
 
 ### Caso 2: `ssh-keygen` — ¿Qué es y qué hace?
 
@@ -140,7 +144,8 @@ autenticación para SSH. Soporta exclusivamente el protocolo **SSH-2**.
   de Llaves (KRL)[^krl].
 :::
 
----
+
+## {.smaller}
 
 ### Caso 2: Generando el par de llaves
 
@@ -226,7 +231,7 @@ PS> ssh -v umbral@103.199.187.160
 
 ### Perspectiva del Cliente — Flujo de negociación
 
-```{.bash code-line-numbers="2|4-5|7-8|10"}
+```{.bash code-line-numbers="2|4-5|7-8|9"}
 # 1. El servidor anuncia los métodos disponibles:
 debug1: Authentications that can continue: publickey,password
 
@@ -285,7 +290,7 @@ systemd-logind[695]: New session 1968 of user umbral.
 
 ## Caso 3: Autenticación por Certificado SSH {.center}
 
----
+## {.smaller}
 
 ### Caso 3: ¿Qué es una CA en SSH?
 
@@ -307,7 +312,7 @@ al que vos decidís darle el rol de autoridad.
 
 ---
 
-### Caso 3: Configurando la CA
+### Caso 3: Configurando la CA  
 
 ```{.bash code-line-numbers="1-2|4-5|7-8|10-11"}
 # 1. Generar el par de llaves de la CA en el servidor:
