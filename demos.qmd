@@ -1,128 +1,85 @@
-## Túnel SSH — la idea
+## Demo 1: `SSH Local Port Forwarding`
 
-Un túnel SSH **encapsula cualquier protocolo** dentro del canal cifrado.  
-El servicio destino solo ve tráfico local — nunca está expuesto directamente.
+> Permite enrutar tráfico de forma segura desde un PC local a un servidor remoto a través de un tunel SSH
 
-```{mermaid}
-%%{init: {'fontSize': 13, 'theme': 'dark'}}%%
-flowchart LR
-    subgraph LOCAL["Tu máquina"]
-        C["💻 localhost:3390"]
-    end
-    subgraph NET["Internet"]
-        T["🔒 SSH cifrado\nAES-256-CTR"]
-    end
-    subgraph REMOTE["Servidor remoto"]
-        S["🖧 RDP :3389\n(no expuesto)"]
-    end
+- Aplicación:
+    - Acceder de forma segura a servicios internos que no están expuestos a internet
 
-    C -->|"-L 3390:localhost:3389"| T
-    T --> S
-
-    style T fill:#0f2a1a,stroke:#22c55e,color:#86efac
-    style S fill:#1e1b4b,stroke:#6366f1,color:#a5b4fc
-```
+## Demo 1: Configuración local
 
 ```bash
-# Abrir el túnel
-ssh -L 3390:localhost:3389 usuario@servidor
-
-# Conectar cliente RDP a localhost:3390
-# Transferir archivos
-scp archivo.txt usuario@servidor:/ruta/
-rsync -avz ./carpeta/ usuario@servidor:/destino/
+ssh -N -i [archivo_identidad] \
+    -L [puerto_local]:[host_destino]:[puerto_destino] \
+    -p [puerto_ssh_remoto] \
+    [usuario]@[servidor_SSH]
 ```
 
-## Local Port Forwarding — Jump Host
+<br>
 
-Acceder a servicios en una **red privada** a través de un servidor intermedio.
+> #### Opciones:
 
-::: {.columns}
-::: {.column width="60%"}
-```{mermaid}
-%%{init: {'fontSize': 13, 'theme': 'dark'}}%%
-flowchart LR
-    subgraph LOCAL["Tu máquina"]
-        C["💻 localhost:5432"]
-    end
-    subgraph DMZ["DMZ / Acceso público"]
-        J["🖧 Jump Host\n:22"]
-    end
-    subgraph PRIV["Red privada"]
-        DB["🗄️ DB Server\n:5432"]
-    end
+- `-N`: no ejecutar comando remoto
+- `-i`: especificar clave privada
+- `-L`: [**forwardeo al puerto local**]{.underline}
+- `-p`: puerto servidor SSH
 
-    C -->|"SSH -L cifrado"| J
-    J -->|"red interna"| DB
 
-    style J fill:#1e3a5f,stroke:#3b82f6,color:#93c5fd
-    style DB fill:#3b0764,stroke:#a855f7,color:#d8b4fe
+## Demo 1: Diagrama de red {.smaller}
+
+![](figs/demo-1.svg)
+
+```bash {code-line-numbers="false"}
+    ssh -N -i ~/.ssh/id_ed25519 -L 8080:nginx:80 -p 22000 ubuntu@54.90.211.82
 ```
+
+::: {.notes}
+- Localmente se configura el forwardeo
+- En el navegador no hay que cambiar nada
+- Solo se accede al servicio apuntado
+- Dentro de la configuración del `EC2` hay que habilitar el puerto `22000`
+- Abrir el navegador y mostrar `http://localhost:8080`
 :::
-::: {.column width="40%"}
+
+
+## Demo 2: `Dynamic Port Forwarding`
+
+> Permite enrutar cualquier tráfico de forma segura desde un PC local a una ubicación remota (similar a lo que se logra con `VPN`)
+
+- Permite:
+    - Evitar firewalls o filtros de red
+    - Protección de privacidad
+
+## Demo 2: Configuración local
+
 ```bash
-# Abrir el túnel
-ssh -L 5432:db.interno:5432 \
-    user@jump-host
-
-# Conectar como si fuera local
-psql -h localhost -p 5432 \
-     -U admin midb
+ssh -N -i [archivo_identidad] \
+    -D [puerto_local] \
+    -p [puerto_ssh_remoto] \
+    [usuario]@[servidor_SSH]
 ```
 
-También podés definirlo en `~/.ssh/config`:
+<br>
 
-```
-Host prod-db
-  HostName jump.empresa.com
-  LocalForward 5432 db.interno:5432
-```
-:::
-:::
+> #### Opciones:
 
-## X11 Forwarding
+- `-N`: no ejecutar comando remoto
+- `-i`: especificar clave privada
+- `-D`: [**servidor proxy SOCKS**]{.underline}
+- `-p`: puerto servidor SSH
 
-Ejecutar **aplicaciones gráficas** del servidor y verlas en tu pantalla local.
+## Demo 2: Diagrama de red {.smaller}
 
-::: {.columns}
-::: {.column width="50%"}
-```{mermaid}
-%%{init: {'fontSize': 12, 'theme': 'dark'}}%%
-sequenceDiagram
-    participant C as 💻 Cliente (X Server)
-    participant S as 🖧 Servidor
+![](figs/demo-2.svg)
 
-    C->>S: ssh -X usuario@servidor
-    note right of S: X11Forwarding yes
-    S->>C: DISPLAY=localhost:10.0
-    S->>C: Datos X11 (ventana, render)
-    C-->>S: Inputs (mouse, teclado)
-    note over C,S: La ventana aparece en tu pantalla 🖼️
+```bash {code-line-numbers="false"}
+    ssh -N -i ~/.ssh/id_ed25519 -D 8080 -p 22000 ubuntu@54.90.211.82
 ```
 
-| Flag | Modo | Riesgo |
-|------|------|--------|
-| `-X` | Untrusted | Bajo |
-| `-Y` | Trusted | Medio ⚠️ |
-:::
-::: {.column width="50%"}
-```bash
-# Conectar con X11
-ssh -X usuario@servidor
 
-# Probar con un reloj
-ssh -X usuario@servidor xclock
-
-# Abrir Firefox remoto
-ssh -X usuario@servidor firefox
-```
-
-> 📸 screenshot / gif de ventana remota
-
-::: {.callout-warning}
-`-Y` le da a la app remota acceso completo  
-al display local. Solo usarlo en servidores  
-de absoluta confianza.
-:::
-:::
+::: {.notes}
+- Localmente se configura el forwardeo
+- En el navegador hay que configurar el proxy a localhost:8080
+- Acceso completo a través de la ubicación remota
+- Se puede acceder al `nginx` con `172.18.0.3` o `http://nginx`
+- Se puede comprobar el cambio de IP con `ipecho.net` 
 :::
