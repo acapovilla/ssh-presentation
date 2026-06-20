@@ -1,6 +1,6 @@
 ---
 title: "Secure Shell Protocol"
-subtitle: "Capa de aplicación · Redes II"
+subtitle: "Capa de aplicación - Redes II"
 date: 06/08/2026
 date-format: "DD [de] MMMM, YYYY"
 format:
@@ -24,11 +24,9 @@ format:
 ## Tópicos a trabajar
 
 ### 1. ¿Qué es SSH?
-### 2. Handshake (Paso a paso)
+### 2. Handshake
 ### 3. Métodos de Autenticación
-### 4. Demos y Casos de Uso (Túneles y X11)
-### 5. Resumen y Conclusiones
-
+### 4. Demo
 
 {{< include intro-ssh.qmd >}}
 
