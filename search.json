@@ -1,0 +1,191 @@
+[
+  {
+    "objectID": "index.html#tópicos-a-trabajar",
+    "href": "index.html#tópicos-a-trabajar",
+    "title": "Secure Shell Protocol",
+    "section": "Tópicos a trabajar",
+    "text": "Tópicos a trabajar\n1. ¿Qué es SSH?\n2. Handshake\n3. Métodos de Autenticación\n4. Demo"
+  },
+  {
+    "objectID": "index.html#ssh-en-el-tiempo",
+    "href": "index.html#ssh-en-el-tiempo",
+    "title": "Secure Shell Protocol",
+    "section": "SSH en el tiempo",
+    "text": "SSH en el tiempo\n\nPrevio a 1995: user & password / sin cifrado / texto plano /\n\n\nTelnet / rlogin, rsh, rcp (Berkley)\n\n\n1995: Tatu Ylönen Diseña e implementa ssh (v1) y slogin\n\n\n\n\nConfidencialidad\nLos datos viajan cifrados\n\n\nAutenticación\nSe verifica la identidad de ambos extremos\n\n\nIntegridad\nNo se pueden modificar entre extremos sin detección\n\n\n\n\n\n\nAntes de SSH, la administración remota usaba Telnet y rsh\nEl problema: todo viajaba en texto plano por la red -&gt; visible para cualquiera con Wireshark\nEn 1995, el científico finlandés Tatu Ylönen diseña SSH como respuesta a un ataque “password-sniffing” en su red universitaria (similar a lo que podría pasar con el e-fich)"
+  },
+  {
+    "objectID": "index.html#ssh-en-el-tiempo-1",
+    "href": "index.html#ssh-en-el-tiempo-1",
+    "title": "Secure Shell Protocol",
+    "section": "SSH en el tiempo",
+    "text": "SSH en el tiempo\n\n1999: OpenBSD Secure Shell más conocido como OpenSSH\n\n\n\n\nImplementación más utilizada en la actualidad\nOpenSource: github.com/openssh/openssh-portable\nSe compone de:\n\nssh y sshd: Cliente y Servidor SSH\nscp: Copia encriptada de archivos\nsftp: Cliente de transferencia de archivos\nssh-keygen: Generación y manejo de claves\nssh-agent, ssh-add, ssh-keyscan\n\n\n\n\n\n\n\n\nIncluida en Linux, macOS y Windows"
+  },
+  {
+    "objectID": "index.html#ssh-en-el-tiempo-2",
+    "href": "index.html#ssh-en-el-tiempo-2",
+    "title": "Secure Shell Protocol",
+    "section": "SSH en el tiempo",
+    "text": "SSH en el tiempo\n\n2006: SSHv2\n\nMayor seguridad\nNuevos métodos de intercambio de claves\nMayor integridad de datos\n\n\n\nRFC 4250: Numeración de los paquetes \nRFC 4251: Arquitectura del protocolo \nRFC 4252: Protocolo de Autenticación \nRFC 4253: Protocolo de Transporte \nRFC 4254: Protocolo de Conexión \n\n\n\ny muchos más: RFC 4255, 4256, 4335, 4344, 4345, 4419, 4432, 4462, 4716, 4819, y sigue.."
+  },
+  {
+    "objectID": "index.html#ssh-resumen-de-características",
+    "href": "index.html#ssh-resumen-de-características",
+    "title": "Secure Shell Protocol",
+    "section": "SSH: Resumen de características",
+    "text": "SSH: Resumen de características\n\nArquitectura Cliente-Servidor\nCapa de Red: IP\nCapa de Transporte: TCP (orientado a la conexión)\n\nPuerto asignado al servidor: 22\n\n3 capas internas:\n\nCapa de transporte\nCapa de autenticación\nCapa de conexión\n\n\n\n\nUtiliza el stack TCP/IP, lo que quiere decir que es orientado a la conexión\nTiene el puerto 22 reservado por la IANA (TCP, UDP y STCP)"
+  },
+  {
+    "objectID": "index.html#inicio-de-la-comunicación",
+    "href": "index.html#inicio-de-la-comunicación",
+    "title": "Secure Shell Protocol",
+    "section": "Inicio de la comunicación",
+    "text": "Inicio de la comunicación\n\n\n\nEjemplo: El usuario inicia la sesión mediante el comando\n\n    $ ssh username@host\n\n\n\n\n\n\n\n\n---\ndisplayMode: compact\nconfig:\n  htmlLabels: false\n---\n\n\nsequenceDiagram\n    autonumber\n    participant C as 💻 Cliente\n    participant S as 🖧 Servidor\n\n    rect rgb(31, 119, 180)\n        note over C,S: Fase 1: Conexión TCP\n        C-&gt;&gt;S: SYN\n        S--&gt;&gt;C: SYN-ACK\n        C-&gt;&gt;S: ACK\n    end"
+  },
+  {
+    "objectID": "index.html#intercambios-de-versión",
+    "href": "index.html#intercambios-de-versión",
+    "title": "Secure Shell Protocol",
+    "section": "Intercambios de versión",
+    "text": "Intercambios de versión\n\n\n\nInicia el proceso de intercambio entre cliente y servidor SSH\n\n\n\n\n\n\n\n---\ndisplayMode: compact\nconfig:\n  htmlLabels: false\n---\n\n\nsequenceDiagram\n    autonumber\n    participant C as 💻 Cliente\n    participant S as 🖧 Servidor\n\n    rect rgb(44, 160, 44)\n        note over C,S: Fase 2: Intercambio de versiones\n        C-&gt;&gt;S: SSH-2.0-OpenSSH_9.0\n        S--&gt;&gt;C: SSH-2.0-OpenSSH_8.2p1\n    end"
+  },
+  {
+    "objectID": "index.html#mensajes-ssh_msg_kexinit",
+    "href": "index.html#mensajes-ssh_msg_kexinit",
+    "title": "Secure Shell Protocol",
+    "section": "Mensajes SSH_MSG_KEXINIT",
+    "text": "Mensajes SSH_MSG_KEXINIT\n\n\n\nNegociación de algoritmos de:\n\nEncriptación\nIntegridad\nCompresión\n\n\n\n\n\n\n\n\n---\ndisplayMode: compact\nconfig:\n  htmlLabels: false\n---\n\n\nsequenceDiagram\n    autonumber\n    participant C as 💻 Cliente\n    participant S as 🖧 Servidor\n\n    rect rgb(214, 39, 40)\n        note over C,S: Fase 3: Negociación de algoritmos\n        C-&gt;&gt;S: SSH_MSG_KEXINIT\n        S--&gt;&gt;C: SSH_MSG_KEXINIT\n    end"
+  },
+  {
+    "objectID": "index.html#claves-de-cifrado",
+    "href": "index.html#claves-de-cifrado",
+    "title": "Secure Shell Protocol",
+    "section": "Claves de cifrado",
+    "text": "Claves de cifrado\n\n\n\nSe intercambia el secreto K y el hash H y se calculan las claves para encriptar la comunicación\n\n\nLa sesión queda encriptada\n\n\n\n\n\n\n\n---\ndisplayMode: compact\nconfig:\n  htmlLabels: false\n---\n\n\nsequenceDiagram\n    autonumber\n    participant C as 💻 Cliente\n    participant S as 🖧 Servidor\n\n    rect rgb(148, 103, 189)\n        note over C,S: Fase 4: Canal cifrado activo\n        C-&gt;&gt;S: SSH_MSG_NEWKEYS\n        S--&gt;&gt;C: SSH_MSG_NEWKEYS\n    end"
+  },
+  {
+    "objectID": "index.html#handshake-completo-y-ahora",
+    "href": "index.html#handshake-completo-y-ahora",
+    "title": "Secure Shell Protocol",
+    "section": "Handshake completo — ¿y ahora?",
+    "text": "Handshake completo — ¿y ahora?\nEl handshake estableció el canal cifrado. Recién ahora el servidor le pregunta al cliente:\n\n“¿Quién sos?”\n\nLa autenticación ocurre dentro del canal cifrado — nadie en la red puede ver cómo te identificás.\n\nEl handshake establece el canal cifrado; la autenticación opera dentro de él. Los tres casos que siguen comparten ese canal — lo que cambia es cómo el usuario demuestra su identidad."
+  },
+  {
+    "objectID": "index.html#evaluando-3-formas-de-conectarse-por-ssh",
+    "href": "index.html#evaluando-3-formas-de-conectarse-por-ssh",
+    "title": "Secure Shell Protocol",
+    "section": "Evaluando 3 Formas de Conectarse por SSH",
+    "text": "Evaluando 3 Formas de Conectarse por SSH\nAnalizaremos cada método desde dos perspectivas:\n\n🖥️ Cliente (PowerShell / terminal local)\n🖧 Servidor (/var/log/auth.log)\n\n\nSeguimos los logs reales del servidor para ver qué pasa internamente. El orden sigue el flujo natural: primero generamos las llaves, luego las usamos en los dos métodos criptográficos, y finalizamos con contraseña para contrastar y mostrar por qué es el método menos robusto."
+  },
+  {
+    "objectID": "index.html#generación-de-claves-ssh",
+    "href": "index.html#generación-de-claves-ssh",
+    "title": "Secure Shell Protocol",
+    "section": "Generación de Claves SSH",
+    "text": "Generación de Claves SSH"
+  },
+  {
+    "objectID": "index.html#section",
+    "href": "index.html#section",
+    "title": "Secure Shell Protocol",
+    "section": "",
+    "text": "ssh-keygen — ¿Qué es y qué hace?\nssh-keygen1 genera y administra llaves SSH.\n\nSin argumentos — genera una llave Ed25519 por defecto.\n-t ed25519 — especifica el tipo de llave explícitamente.\nFormato OpenSSH — guarda la llave privada con un comentario (usuario@host) para identificar su origen.\nPassphrase — cifra la llave privada en disco. Si se pierde, hay que generar un nuevo par y registrarlo en cada servidor.\n\n\nssh-keygen soporta solo SSH-2 (la versión moderna y segura; SSH-1 tiene vulnerabilidades conocidas). La passphrase es opcional pero recomendada — si alguien roba el archivo de llave privada, sin la passphrase no puede usarla. También puede generar parámetros para Diffie-Hellman y listas de revocación (KRL), pero eso es uso avanzado de administración.\n\nDocumentación completa: man.openbsd.org/ssh-keygen.1"
+  },
+  {
+    "objectID": "index.html#section-1",
+    "href": "index.html#section-1",
+    "title": "Secure Shell Protocol",
+    "section": "",
+    "text": "Generando el par de llaves\nCon ssh-keygen -t ed25519 generamos el par localmente. La llave privada nunca sale de la máquina.\nPS&gt; ssh-keygen -t ed25519\n\n# El sistema propone una ruta por defecto — Enter para aceptar:\nEnter file in which to save the key (C:\\Users\\berto/.ssh/id_ed25519):\n\n# Passphrase opcional para cifrar la llave privada en disco:\nEnter passphrase (empty for no passphrase):\n\n# Dos archivos generados:\nYour identification has been saved in C:\\Users\\berto/.ssh/id_ed25519\nYour public key has been saved in C:\\Users\\berto/.ssh/id_ed25519.pub\n\n# Fingerprint — huella digital única del par de llaves:\nThe key fingerprint is:\nSHA256:ztzVw1mjwIuJpexHxr75Z0J5GXjhgltVFD1wit4tE6I berto@DESKTOP-60294G4\n\nNormalmente cada usuario ejecuta esto una sola vez para crear su llave en ~/.ssh/id_ed25519. El administrador del sistema también puede usarlo para generar las claves de host del servidor. Fuente: man.openbsd.org/ssh-keygen.1\n\n\nEl comando genera dos archivos y un fingerprint — explicar cada uno señalando la salida:\n\nid_ed25519 — la llave privada. Nunca sale de la máquina. Si alguien la obtiene, puede autenticarse en cualquier servidor donde esté registrada la llave pública correspondiente.\nid_ed25519.pub — la llave pública. Se copia al servidor en ~/.ssh/authorized_keys. Puede compartirse libremente — sin la privada no sirve para autenticarse.\nSHA256:ztzVw1m... — el fingerprint del par. Es el “ID corto” de la llave: en lugar de registrar o comparar la llave pública completa, usás este hash compacto y único. Aparece en los logs del servidor cada vez que alguien se conecta con esa llave, lo que permite auditar qué llave autenticó cada sesión. Lo vamos a ver en los casos siguientes.\nRandomart — representación visual del fingerprint para reconocer una llave de un vistazo, sin comparar strings largos."
+  },
+  {
+    "objectID": "index.html#caso-1-autenticación-por-publickey",
+    "href": "index.html#caso-1-autenticación-por-publickey",
+    "title": "Secure Shell Protocol",
+    "section": "Caso 1: Autenticación por PublicKey",
+    "text": "Caso 1: Autenticación por PublicKey"
+  },
+  {
+    "objectID": "index.html#qué-pasa-si-tenés-100-usuarios",
+    "href": "index.html#qué-pasa-si-tenés-100-usuarios",
+    "title": "Secure Shell Protocol",
+    "section": "¿Qué pasa si tenés 100 usuarios?",
+    "text": "¿Qué pasa si tenés 100 usuarios?\n\nDejar que la pregunta quede en el aire unos segundos. El problema es que con publickey pura, cada usuario necesita su llave registrada en cada servidor. Con 100 usuarios y 10 servidores son 1000 entradas que mantener — y si alguien se va, hay que actualizar todo a mano. El Caso 2 resuelve exactamente esto."
+  },
+  {
+    "objectID": "index.html#caso-2-autenticación-por-certificado-ssh",
+    "href": "index.html#caso-2-autenticación-por-certificado-ssh",
+    "title": "Secure Shell Protocol",
+    "section": "Caso 2: Autenticación por Certificado SSH",
+    "text": "Caso 2: Autenticación por Certificado SSH"
+  },
+  {
+    "objectID": "index.html#y-si-no-tenés-nada-de-lo-anterior",
+    "href": "index.html#y-si-no-tenés-nada-de-lo-anterior",
+    "title": "Secure Shell Protocol",
+    "section": "¿Y si no tenés nada de lo anterior?",
+    "text": "¿Y si no tenés nada de lo anterior?"
+  },
+  {
+    "objectID": "index.html#caso-3-autenticación-por-contraseña",
+    "href": "index.html#caso-3-autenticación-por-contraseña",
+    "title": "Secure Shell Protocol",
+    "section": "Caso 3: Autenticación por Contraseña",
+    "text": "Caso 3: Autenticación por Contraseña\n\nDejar que la pregunta quede en el aire. Sin par de llaves, sin CA, sin certificado — solo un usuario y una contraseña. Es el método más común y el menos seguro. El Caso 3 muestra por qué los casos anteriores existen."
+  },
+  {
+    "objectID": "index.html#demo-1-ssh-local-port-forwarding",
+    "href": "index.html#demo-1-ssh-local-port-forwarding",
+    "title": "Secure Shell Protocol",
+    "section": "Demo 1: SSH Local Port Forwarding",
+    "text": "Demo 1: SSH Local Port Forwarding\n\nPermite enrutar tráfico de forma segura desde un PC local a un servidor remoto a través de un tunel SSH\n\n\nAplicación:\n\nAcceder de forma segura a servicios internos que no están expuestos a internet\nDebuggear servicios sin exponer el tráfico"
+  },
+  {
+    "objectID": "index.html#demo-1-configuración-local",
+    "href": "index.html#demo-1-configuración-local",
+    "title": "Secure Shell Protocol",
+    "section": "Demo 1: Configuración local",
+    "text": "Demo 1: Configuración local\nssh -N -i [archivo_identidad] \\\n    -L [puerto_local]:[host_destino]:[puerto_destino] \\\n    -p [puerto_ssh_remoto] \\\n    [usuario]@[servidor_SSH]\n\n\nOpciones:\n\n\n-N: no ejecutar comando remoto\n-i: especificar clave privada\n-L: forwardeo al puerto local\n-p: puerto servidor SSH"
+  },
+  {
+    "objectID": "index.html#demo-1-diagrama-de-red",
+    "href": "index.html#demo-1-diagrama-de-red",
+    "title": "Secure Shell Protocol",
+    "section": "Demo 1: Diagrama de red",
+    "text": "Demo 1: Diagrama de red\n\n    ssh -N -i [archivo_identidad] -L [puerto_local]:[host_destino]:[puerto_destino] -p [puerto_ssh_remoto] [usuario]@[servidor_SSH]\n    ssh -N -i ~/.ssh/id_ed25519 -L 8080:nginx:80 -p 22000 ubuntu@54.90.211.82\n\n\nLocalmente se configura el forwardeo\nEn el navegador no hay que cambiar nada\nSolo se accede al servicio apuntado\nDentro de la configuración del EC2 hay que habilitar el puerto 22000\nAbrir el navegador y mostrar http://localhost:8080"
+  },
+  {
+    "objectID": "index.html#demo-2-dynamic-port-forwarding",
+    "href": "index.html#demo-2-dynamic-port-forwarding",
+    "title": "Secure Shell Protocol",
+    "section": "Demo 2: Dynamic Port Forwarding",
+    "text": "Demo 2: Dynamic Port Forwarding\n\nPermite enrutar cualquier tráfico de forma segura desde un PC local a una ubicación remota (similar a lo que se logra con VPN)\n\n\nPermite:\n\nEvitar firewalls o filtros de red\nProtección de privacidad"
+  },
+  {
+    "objectID": "index.html#demo-2-configuración-local",
+    "href": "index.html#demo-2-configuración-local",
+    "title": "Secure Shell Protocol",
+    "section": "Demo 2: Configuración local",
+    "text": "Demo 2: Configuración local\nssh -N -i [archivo_identidad] \\\n    -D [puerto_local] \\\n    -p [puerto_ssh_remoto] \\\n    [usuario]@[servidor_SSH]\n\n\nOpciones:\n\n\n-N: no ejecutar comando remoto\n-i: especificar clave privada\n-D: servidor proxy SOCKS\n-p: puerto servidor SSH"
+  },
+  {
+    "objectID": "index.html#demo-2-diagrama-de-red",
+    "href": "index.html#demo-2-diagrama-de-red",
+    "title": "Secure Shell Protocol",
+    "section": "Demo 2: Diagrama de red",
+    "text": "Demo 2: Diagrama de red\n\n    ssh -N -i ~/.ssh/id_ed25519 -D 8080 -p 22000 ubuntu@54.90.211.82\n\n\nLocalmente se configura el forwardeo\nEn el navegador hay que configurar el proxy a localhost:8080\nAcceso completo a través de la ubicación remota\nSe puede acceder al nginx con 172.18.0.3 o http://nginx\nSe puede comprobar el cambio de IP con ipecho.net"
+  },
+  {
+    "objectID": "index.html#section-2",
+    "href": "index.html#section-2",
+    "title": "Secure Shell Protocol",
+    "section": "",
+    "text": "¿Preguntas?"
+  },
+  {
+    "objectID": "index.html#muchas-gracias",
+    "href": "index.html#muchas-gracias",
+    "title": "Secure Shell Protocol",
+    "section": "Muchas gracias",
+    "text": "Muchas gracias"
+  }
+]

@@ -1,0 +1,1660 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/tabby.min.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-6b6957c917596b414ec0b78690761e87.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.9.38">
+
+  <title>Secure Shell Protocol</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="site_libs/revealjs/dist/reveal.css">
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+      }
+    pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+    div.sourceCode
+      { color: #e1e4e8; background-color: #24292e; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #e1e4e8; } /* Normal */
+    code span.al { color: #ff5555; font-weight: bold; } /* Alert */
+    code span.an { color: #6a737d; } /* Annotation */
+    code span.at { color: #f97583; } /* Attribute */
+    code span.bn { color: #79b8ff; } /* BaseN */
+    code span.bu { color: #f97583; } /* BuiltIn */
+    code span.cf { color: #f97583; } /* ControlFlow */
+    code span.ch { color: #9ecbff; } /* Char */
+    code span.cn { color: #79b8ff; } /* Constant */
+    code span.co { color: #6a737d; } /* Comment */
+    code span.cv { color: #6a737d; } /* CommentVar */
+    code span.do { color: #6a737d; } /* Documentation */
+    code span.dt { color: #f97583; } /* DataType */
+    code span.dv { color: #79b8ff; } /* DecVal */
+    code span.er { color: #ff5555; text-decoration: underline; } /* Error */
+    code span.ex { color: #f97583; font-weight: bold; } /* Extension */
+    code span.fl { color: #79b8ff; } /* Float */
+    code span.fu { color: #b392f0; } /* Function */
+    code span.im { color: #9ecbff; } /* Import */
+    code span.in { color: #6a737d; } /* Information */
+    code span.kw { color: #f97583; } /* Keyword */
+    code span.op { color: #e1e4e8; } /* Operator */
+    code span.ot { color: #b392f0; } /* Other */
+    code span.pp { color: #f97583; } /* Preprocessor */
+    code span.re { color: #6a737d; } /* RegionMarker */
+    code span.sc { color: #79b8ff; } /* SpecialChar */
+    code span.ss { color: #9ecbff; } /* SpecialString */
+    code span.st { color: #9ecbff; } /* String */
+    code span.va { color: #ffab70; } /* Variable */
+    code span.vs { color: #9ecbff; } /* VerbatimString */
+    code span.wa { color: #ff5555; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="site_libs/revealjs/dist/theme/quarto-a744a2b370710ab7168324db5d172d71.css">
+  <link href="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <meta name="mermaid-theme" content="dark">
+  <script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+  <script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+  <link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+</head>
+<body class="quarto-dark">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Secure Shell Protocol</h1>
+  <p class="subtitle">Capa de aplicación - Redes II</p>
+
+<div class="quarto-title-authors">
+</div>
+
+  <p class="date">08 de junio, 2026</p>
+</section>
+<section id="tópicos-a-trabajar" class="slide level2">
+<h2>Tópicos a trabajar</h2>
+<h3 id="qué-es-ssh">1. ¿Qué es SSH?</h3>
+<h3 id="handshake">2. Handshake</h3>
+<h3 id="métodos-de-autenticación">3. Métodos de Autenticación</h3>
+<h3 id="demo">4. Demo</h3>
+</section>
+<section>
+<section id="qué-es-secure-shell-protocol" class="title-slide slide level1 center">
+<h1>¿Qué es <u>S</u>ecure <u>Sh</u>ell Protocol?</h1>
+<p>Protocolo de red criptográfico que permite operar servicios de red de forma segura en redes no seguras</p>
+<aside class="notes">
+<!-- Fuente: https://en.wikipedia.org/wiki/Secure_Shell -->
+<ul>
+<li>Protocolo de terminal segura (Secure Shell Protocol, SSH)</li>
+<li>Protocolo de red criptográfico que permite operar servicios de red de forma segura en redes no seguras</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="ssh-en-el-tiempo" class="slide level2 smaller">
+<h2>SSH en el tiempo</h2>
+<blockquote>
+<p><strong>Previo a 1995</strong>: user &amp; password / sin cifrado / <em>texto plano</em> /</p>
+</blockquote>
+<ul>
+<li><code>Telnet</code> / <code>rlogin</code>, <code>rsh</code>, <code>rcp</code> (<em>Berkley</em>)</li>
+</ul>
+<blockquote>
+<p><strong>1995</strong>: <em>Tatu Ylönen</em> Diseña e implementa <strong><code>ssh</code></strong> (v1) y <strong><code>slogin</code></strong></p>
+</blockquote>
+<table class="caption-top">
+<tbody>
+<tr class="odd">
+<td style="text-align: center;"><strong>Confidencialidad</strong></td>
+<td style="text-align: center;">Los datos viajan cifrados</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;"><strong>Autenticación</strong></td>
+<td style="text-align: center;">Se verifica la identidad de ambos extremos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;"><strong>Integridad</strong></td>
+<td style="text-align: center;">No se pueden modificar entre extremos sin detección</td>
+</tr>
+</tbody>
+</table>
+<aside class="notes">
+<!-- Fuente: https://en.wikipedia.org/wiki/Secure_Shell -->
+<ul>
+<li>Antes de SSH, la administración remota usaba <strong>Telnet</strong> y <strong>rsh</strong></li>
+<li>El problema: todo viajaba en <strong>texto plano</strong> por la red -&gt; visible para cualquiera con Wireshark</li>
+<li>En 1995, el científico finlandés <strong>Tatu Ylönen</strong> diseña SSH como respuesta a un ataque “password-sniffing” en su red universitaria (similar a lo que podría pasar con el <em>e-fich</em>)</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="ssh-en-el-tiempo-1" class="slide level2 smaller">
+<h2>SSH en el tiempo</h2>
+<blockquote>
+<p><strong>1999</strong>: <em>OpenBSD Secure Shell</em> más conocido como <strong><code>OpenSSH</code></strong></p>
+</blockquote>
+<div class="columns">
+<div class="column" style="width:60%;">
+<ul>
+<li><p>Implementación más utilizada en la actualidad</p></li>
+<li><p>OpenSource: <a href="https://github.com/openssh/openssh-portable" target="_blank">github.com/openssh/openssh-portable</a></p></li>
+<li><p>Se compone de:</p>
+<ul>
+<li><code>ssh</code> y <code>sshd</code>: Cliente y Servidor SSH</li>
+<li><code>scp</code>: Copia encriptada de archivos</li>
+<li><code>sftp</code>: Cliente de transferencia de archivos</li>
+<li><code>ssh-keygen</code>: Generación y manejo de claves</li>
+<li><code>ssh-agent</code>, <code>ssh-add</code>, <code>ssh-keyscan</code></li>
+</ul></li>
+</ul>
+</div><div class="column" style="width:40%;">
+<p><br></p>
+<p><a href="https://github.com/openssh/openssh-portable" target="_blank"><img data-src="https://opengraph.githubassets.com/70d7044a966a541d9df6002fbeb62d005555cc7/openssh/openssh-portable/.png"></a></p>
+</div></div>
+<aside class="notes">
+<ul>
+<li>Incluida en <em>Linux</em>, <em>macOS</em> y <em>Windows</em></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="ssh-en-el-tiempo-2" class="slide level2 smaller">
+<h2>SSH en el tiempo</h2>
+<blockquote>
+<p><strong>2006</strong>: <strong><code>SSHv2</code></strong></p>
+<ul>
+<li>Mayor seguridad</li>
+<li>Nuevos métodos de intercambio de claves</li>
+<li>Mayor integridad de datos</li>
+</ul>
+</blockquote>
+<ul>
+<li><a href="https://www.rfc-editor.org/info/rfc4250/" target="_blank"><strong>RFC 4250</strong></a>: Numeración de los paquetes <!-- Protocol Assigned Numbers --></li>
+<li><a href="https://www.rfc-editor.org/info/rfc4251/" target="_blank"><strong>RFC 4251</strong></a>: Arquitectura del protocolo <!-- Protocol Architecture --></li>
+<li><a href="https://www.rfc-editor.org/info/rfc4252/" target="_blank"><strong>RFC 4252</strong></a>: Protocolo de Autenticación <!-- Authentication Protocol --></li>
+<li><a href="https://www.rfc-editor.org/info/rfc4253/" target="_blank"><strong>RFC 4253</strong></a>: Protocolo de Transporte <!-- Transport Layer Protocol --></li>
+<li><a href="https://www.rfc-editor.org/info/rfc4254/" target="_blank"><strong>RFC 4254</strong></a>: Protocolo de Conexión <!-- Connection Protocol --></li>
+</ul>
+
+<aside><div>
+<p>y muchos más: RFC <a href="https://www.rfc-editor.org/info/rfc4255/" target="_blank"><strong>4255</strong></a>, <a href="https://www.rfc-editor.org/info/rfc4256/" target="_blank"><strong>4256</strong></a>, <a href="https://www.rfc-editor.org/info/rfc4335/" target="_blank"><strong>4335</strong></a>, <a href="https://www.rfc-editor.org/info/rfc4344/" target="_blank"><strong>4344</strong></a>, <a href="https://www.rfc-editor.org/info/rfc4345/" target="_blank"><strong>4345</strong></a>, <a href="https://www.rfc-editor.org/info/rfc4419/" target="_blank"><strong>4419</strong></a>, <a href="https://www.rfc-editor.org/info/rfc4432/" target="_blank"><strong>4432</strong></a>, <a href="https://www.rfc-editor.org/info/rfc4462/" target="_blank"><strong>4462</strong></a>, <a href="https://www.rfc-editor.org/info/rfc4716/" target="_blank"><strong>4716</strong></a>, <a href="https://www.rfc-editor.org/info/rfc4819/" target="_blank"><strong>4819</strong></a>, y sigue.. <!--
+[**5647**](https://www.rfc-editor.org/info/rfc5647/){target="_blank"},
+[**5656**](https://www.rfc-editor.org/info/rfc5656/){target="_blank"},
+[**6187**](https://www.rfc-editor.org/info/rfc6187/){target="_blank"},
+[**6239**](https://www.rfc-editor.org/info/rfc6239/){target="_blank"},
+[**6594**](https://www.rfc-editor.org/info/rfc6594/){target="_blank"},
+[**6668**](https://www.rfc-editor.org/info/rfc6668/){target="_blank"},
+
+[**7479**](https://www.rfc-editor.org/info/rfc7479/){target="_blank"},
+[**5592**](https://www.rfc-editor.org/info/rfc5592/){target="_blank"},
+[**6242**](https://www.rfc-editor.org/info/rfc6242/){target="_blank"},
+[**8332**](https://www.rfc-editor.org/info/rfc8332/){target="_blank"},
+[**8709**](https://www.rfc-editor.org/info/rfc8709/){target="_blank"},
+--></p>
+</div></aside></section>
+<section id="ssh-resumen-de-características" class="slide level2 smaller">
+<h2>SSH: Resumen de características</h2>
+<ul>
+<li><h4 id="arquitectura-cliente-servidor">Arquitectura Cliente-Servidor</h4></li>
+<li><h4 id="capa-de-red-ip">Capa de Red: <code>IP</code></h4></li>
+<li><h4 id="capa-de-transporte-tcp-orientado-a-la-conexión">Capa de Transporte: <code>TCP</code> (orientado a la conexión)</h4>
+<ul>
+<li>Puerto asignado al servidor: <code>22</code></li>
+</ul></li>
+<li><h4 id="capas-internas">3 capas internas:</h4>
+<ol type="1">
+<li>Capa de transporte</li>
+<li>Capa de autenticación</li>
+<li>Capa de conexión</li>
+</ol></li>
+</ul>
+<aside class="notes">
+<ul>
+<li>Utiliza el stack TCP/IP, lo que quiere decir que es orientado a la conexión</li>
+<li>Tiene el puerto 22 reservado por la <em>IANA</em> (TCP, UDP y STCP)</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section></section>
+<section>
+<section id="capa-de-transporte" class="title-slide slide level1 center">
+<h1>Capa de transporte</h1>
+<p>Antes de poder cifrar la conexión, cliente y servidor negocian utilizando <strong>texto plano</strong></p>
+</section>
+<section id="inicio-de-la-comunicación" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Inicio de la comunicación</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li><u>Ejemplo</u>: El usuario inicia la sesión mediante el comando</li>
+</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy" data-id="quarto-animate-code"><code class="sourceCode bash hljs"><span id="cb1-1" class="hljs-ln-code"><a aria-hidden="true" tabindex="-1"></a>    <span class="ex">$</span> ssh username@host</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><br></p>
+<p><img data-src="figs/handshake-1.png"></p>
+</div><div class="column">
+<div class="cell" data-reveal="true" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">---
+displayMode: compact
+config:
+  htmlLabels: false
+---
+
+
+sequenceDiagram
+    autonumber
+    participant C as 💻 Cliente
+    participant S as 🖧 Servidor
+
+    rect rgb(31, 119, 180)
+        note over C,S: Fase 1: Conexión TCP
+        C-&gt;&gt;S: SYN
+        S--&gt;&gt;C: SYN-ACK
+        C-&gt;&gt;S: ACK
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="intercambios-de-versión" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Intercambios de versión</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Inicia el proceso de intercambio entre cliente y servidor <code>SSH</code></li>
+</ul>
+</div><div class="column">
+<div class="cell" data-reveal="true" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">---
+displayMode: compact
+config:
+  htmlLabels: false
+---
+
+
+sequenceDiagram
+    autonumber
+    participant C as 💻 Cliente
+    participant S as 🖧 Servidor
+
+    rect rgb(44, 160, 44)
+        note over C,S: Fase 2: Intercambio de versiones
+        C-&gt;&gt;S: SSH-2.0-OpenSSH_9.0
+        S--&gt;&gt;C: SSH-2.0-OpenSSH_8.2p1
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div></div>
+
+<img data-src="figs/handshake-2.png" class="r-stretch"></section>
+<section id="mensajes-ssh_msg_kexinit" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Mensajes <code>SSH_MSG_KEXINIT</code></h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Negociación de algoritmos de:
+<ul>
+<li>Encriptación</li>
+<li>Integridad</li>
+<li>Compresión</li>
+</ul></li>
+</ul>
+</div><div class="column">
+<div class="cell" data-reveal="true" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">---
+displayMode: compact
+config:
+  htmlLabels: false
+---
+
+
+sequenceDiagram
+    autonumber
+    participant C as 💻 Cliente
+    participant S as 🖧 Servidor
+
+    rect rgb(214, 39, 40)
+        note over C,S: Fase 3: Negociación de algoritmos
+        C-&gt;&gt;S: SSH_MSG_KEXINIT
+        S--&gt;&gt;C: SSH_MSG_KEXINIT
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div></div>
+
+<img data-src="figs/handshake-3.png" class="r-stretch"></section>
+<section id="claves-de-cifrado" class="slide level2" data-auto-animate="true">
+<h2 data-id="quarto-animate-title">Claves de cifrado</h2>
+<div class="columns">
+<div class="column">
+<ul>
+<li>Se intercambia el secreto <code>K</code> y el hash <code>H</code> y se calculan las claves para encriptar la comunicación</li>
+</ul>
+<blockquote>
+<p>La sesión queda encriptada</p>
+</blockquote>
+</div><div class="column">
+<div class="cell" data-reveal="true" data-layout-align="center">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<pre class="mermaid mermaid-js">---
+displayMode: compact
+config:
+  htmlLabels: false
+---
+
+
+sequenceDiagram
+    autonumber
+    participant C as 💻 Cliente
+    participant S as 🖧 Servidor
+
+    rect rgb(148, 103, 189)
+        note over C,S: Fase 4: Canal cifrado activo
+        C-&gt;&gt;S: SSH_MSG_NEWKEYS
+        S--&gt;&gt;C: SSH_MSG_NEWKEYS
+    end
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div></div>
+
+<img data-src="figs/handshake-4B.png" class="r-stretch"></section></section>
+<section>
+<section id="autenticación" class="title-slide slide level1 center">
+<h1>Autenticación</h1>
+
+</section>
+<section id="handshake-completo-y-ahora" class="slide level2 center">
+<h2>Handshake completo — ¿y ahora?</h2>
+<p>El handshake estableció el canal cifrado. Recién ahora el servidor le pregunta al cliente:</p>
+<blockquote>
+<p><em>“¿Quién sos?”</em></p>
+</blockquote>
+<p>La autenticación ocurre <strong>dentro</strong> del canal cifrado — nadie en la red puede ver cómo te identificás.</p>
+<aside class="notes">
+<p>El handshake establece el canal cifrado; la autenticación opera dentro de él. Los tres casos que siguen comparten ese canal — lo que cambia es cómo el usuario demuestra su identidad.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="evaluando-3-formas-de-conectarse-por-ssh" class="slide level2">
+<h2>Evaluando 3 Formas de Conectarse por SSH</h2>
+<p>Analizaremos cada método desde dos perspectivas:</p>
+<ul>
+<li>🖥️ <strong>Cliente</strong> (PowerShell / terminal local)</li>
+<li>🖧 <strong>Servidor</strong> (<code>/var/log/auth.log</code>)</li>
+</ul>
+<aside class="notes">
+<p>Seguimos los logs reales del servidor para ver qué pasa internamente. El orden sigue el flujo natural: primero generamos las llaves, luego las usamos en los dos métodos criptográficos, y finalizamos con contraseña para contrastar y mostrar por qué es el método menos robusto.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="generación-de-claves-ssh" class="slide level2 center">
+<h2>Generación de Claves SSH</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="por-qué-ed25519">¿Por qué Ed25519?</h3>
+<p>El algoritmo que usa <code>ssh-keygen</code> para generar nuestras llaves.</p>
+<ul>
+<li class="fragment"><strong>Seguro y moderno</strong> — estándar recomendado hoy para SSH. Una llave Ed25519 completa tiene ~68 caracteres; una RSA equivalente supera los 500.</li>
+<li class="fragment"><strong>Muy rápido</strong> — firma y verificación en microsegundos.</li>
+<li class="fragment"><strong>Verificable</strong> — el servidor puede comprobar una firma sin conocer tu llave privada. Es exactamente lo que ocurre en los Casos 1 y 2.</li>
+</ul>
+<aside class="notes">
+<p>Ed25519 es el nombre del algoritmo. EdDSA es el esquema general de firma sobre curvas elípticas; Ed25519 es la implementación concreta sobre la curva Curve25519. Para el público alcanza con decir que es el estándar moderno recomendado para SSH. Si alguien pregunta por RSA: Ed25519 logra la misma seguridad con llaves mucho más cortas (256 bits vs 3072 bits) y menor costo computacional. El tamaño visible de la llave pública refleja esa diferencia — ~68 caracteres vs 500+.</p>
+<p>Para el tercer punto: “La llave pública y la privada están relacionadas matemáticamente — lo que firma una, solo la otra puede verificarlo. El servidor nunca necesita ver tu llave privada.”</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="section" class="slide level2 smaller">
+<h2></h2>
+<h3 id="ssh-keygen-qué-es-y-qué-hace"><code>ssh-keygen</code> — ¿Qué es y qué hace?</h3>
+<p><code>ssh-keygen</code><sup>1</sup> genera y administra llaves SSH.</p>
+<ul>
+<li class="fragment"><strong>Sin argumentos</strong> — genera una llave Ed25519 por defecto.</li>
+<li class="fragment"><strong><code>-t ed25519</code></strong> — especifica el tipo de llave explícitamente.</li>
+<li class="fragment"><strong>Formato OpenSSH</strong> — guarda la llave privada con un comentario (<code>usuario@host</code>) para identificar su origen.</li>
+<li class="fragment"><strong>Passphrase</strong> — cifra la llave privada en disco. Si se pierde, hay que generar un nuevo par y registrarlo en cada servidor.</li>
+</ul>
+<aside class="notes">
+<p>ssh-keygen soporta solo SSH-2 (la versión moderna y segura; SSH-1 tiene vulnerabilidades conocidas). La passphrase es opcional pero recomendada — si alguien roba el archivo de llave privada, sin la passphrase no puede usarla. También puede generar parámetros para Diffie-Hellman y listas de revocación (KRL), pero eso es uso avanzado de administración.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside><ol class="aside-footnotes"><li id="fn1"><p>Documentación completa: <a href="https://man.openbsd.org/ssh-keygen.1">man.openbsd.org/ssh-keygen.1</a></p></li></ol></aside></section>
+<section id="section-1" class="slide level2 smaller">
+<h2></h2>
+<h3 id="generando-el-par-de-llaves">Generando el par de llaves</h3>
+<p>Con <code>ssh-keygen -t ed25519</code> generamos el par localmente. La llave privada <strong>nunca sale de la máquina</strong>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a></a><span class="ex">PS</span><span class="op">&gt;</span> ssh-keygen <span class="at">-t</span> ed25519</span>
+<span id="cb2-2"><a></a></span>
+<span id="cb2-3"><a></a><span class="co"># El sistema propone una ruta por defecto — Enter para aceptar:</span></span>
+<span id="cb2-4"><a></a><span class="ex">Enter</span> file in which to save the key <span class="er">(</span><span class="ex">C:\Users\berto/.ssh/id_ed25519</span><span class="kw">)</span><span class="bu">:</span></span>
+<span id="cb2-5"><a></a></span>
+<span id="cb2-6"><a></a><span class="co"># Passphrase opcional para cifrar la llave privada en disco:</span></span>
+<span id="cb2-7"><a></a><span class="ex">Enter</span> passphrase <span class="er">(</span><span class="ex">empty</span> for no passphrase<span class="kw">)</span><span class="bu">:</span></span>
+<span id="cb2-8"><a></a></span>
+<span id="cb2-9"><a></a><span class="co"># Dos archivos generados:</span></span>
+<span id="cb2-10"><a></a><span class="ex">Your</span> identification has been saved in C:\Users\berto/.ssh/id_ed25519</span>
+<span id="cb2-11"><a></a><span class="ex">Your</span> public key has been saved in C:\Users\berto/.ssh/id_ed25519.pub</span>
+<span id="cb2-12"><a></a></span>
+<span id="cb2-13"><a></a><span class="co"># Fingerprint — huella digital única del par de llaves:</span></span>
+<span id="cb2-14"><a></a><span class="ex">The</span> key fingerprint is:</span>
+<span id="cb2-15"><a></a><span class="ex">SHA256:ztzVw1mjwIuJpexHxr75Z0J5GXjhgltVFD1wit4tE6I</span> berto@DESKTOP-60294G4</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote>
+<p>Normalmente cada usuario ejecuta esto <strong>una sola vez</strong> para crear su llave en <code>~/.ssh/id_ed25519</code>. El administrador del sistema también puede usarlo para generar las <strong>claves de host</strong> del servidor. <em>Fuente: <a href="https://man.openbsd.org/ssh-keygen.1">man.openbsd.org/ssh-keygen.1</a></em></p>
+</blockquote>
+<aside class="notes">
+<p>El comando genera dos archivos y un fingerprint — explicar cada uno señalando la salida:</p>
+<ul>
+<li><strong><code>id_ed25519</code></strong> — la llave privada. Nunca sale de la máquina. Si alguien la obtiene, puede autenticarse en cualquier servidor donde esté registrada la llave pública correspondiente.</li>
+<li><strong><code>id_ed25519.pub</code></strong> — la llave pública. Se copia al servidor en <code>~/.ssh/authorized_keys</code>. Puede compartirse libremente — sin la privada no sirve para autenticarse.</li>
+<li><strong><code>SHA256:ztzVw1m...</code></strong> — el fingerprint del par. Es el “ID corto” de la llave: en lugar de registrar o comparar la llave pública completa, usás este hash compacto y único. Aparece en los logs del servidor cada vez que alguien se conecta con esa llave, lo que permite auditar qué llave autenticó cada sesión. Lo vamos a ver en los casos siguientes.</li>
+<li><strong>Randomart</strong> — representación visual del fingerprint para reconocer una llave de un vistazo, sin comparar strings largos.</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="registrando-la-llave-en-el-servidor">Registrando la llave en el servidor</h3>
+<p>Con el par generado, copiamos la llave pública al servidor para que <code>sshd</code> pueda reconocernos en conexiones futuras.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a></a><span class="co"># Opción A — comando automático (Linux/macOS):</span></span>
+<span id="cb3-2"><a></a><span class="ex">$</span> ssh-copy-id umbral@103.199.187.160</span>
+<span id="cb3-3"><a></a></span>
+<span id="cb3-4"><a></a><span class="co"># Opción B — manual desde PowerShell (Windows):</span></span>
+<span id="cb3-5"><a></a><span class="ex">PS</span><span class="op">&gt;</span> Get-Content <span class="va">$env</span>:USERPROFILE<span class="dt">\.</span>ssh<span class="dt">\i</span>d_ed25519.pub <span class="kw">|</span> <span class="fu">ssh</span> umbral@103.199.187.160 <span class="dt">\</span></span>
+<span id="cb3-6"><a></a>    <span class="st">"mkdir -p ~/.ssh &amp;&amp; cat &gt;&gt; ~/.ssh/authorized_keys &amp;&amp; chmod 600 ~/.ssh/authorized_keys"</span></span>
+<span id="cb3-7"><a></a></span>
+<span id="cb3-8"><a></a><span class="co"># Verificación en el servidor:</span></span>
+<span id="cb3-9"><a></a><span class="ex">$</span> cat ~/.ssh/authorized_keys</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote>
+<p>Ambos métodos agregan la llave pública a <code>~/.ssh/authorized_keys</code> en el servidor — el archivo que <code>sshd</code> consulta para decidir si acepta una conexión por llave pública.</p>
+</blockquote>
+<aside class="notes">
+<p><code>~/.ssh/authorized_keys</code> vive en el servidor, en el directorio del usuario al que te conectás. Contiene una llave pública por línea. Cuando alguien intenta conectarse, <code>sshd</code> lee ese archivo y verifica si la llave que ofrece el cliente está ahí.</p>
+<p>Con 100 usuarios tenés 100 pares de llaves — cada usuario tiene su privada en su máquina y su pública registrada en <code>authorized_keys</code> de cada servidor al que accede. Si tenés 10 servidores, son 1000 entradas que mantener. Si un empleado se va, tenés que actualizar los 10 servidores manualmente. Eso es exactamente el problema que resuelve el Caso 2.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="observando-la-negociación-con--v">Observando la negociación con <code>-v</code></h3>
+<p>En los tres casos usamos <code>ssh -v</code> para ver el flujo de autenticación entre cliente y servidor.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a></a><span class="ex">PS</span><span class="op">&gt;</span> ssh <span class="at">-v</span> umbral@103.199.187.160</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote>
+<p><strong><code>-v</code> — Modo verbose</strong> Hace que <code>ssh</code> imprima mensajes de depuración sobre su progreso. Se puede repetir hasta 3 veces (<code>-vvv</code>) para mayor detalle. <em>Fuente: <a href="https://man.openbsd.org/ssh.1">man.openbsd.org/ssh.1</a></em></p>
+</blockquote>
+</section>
+<section id="caso-1-autenticación-por-publickey" class="slide level2 center">
+<h2>Caso 1: Autenticación por PublicKey</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="perspectiva-del-cliente-flujo-de-negociación">Perspectiva del Cliente — Flujo de negociación</h3>
+<p>Con la llave registrada en el servidor, la autenticación ocurre sin contraseña — el servidor firma un desafío criptográfico con su llave privada local.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a></a><span class="ex">PS</span><span class="op">&gt;</span> ssh <span class="at">-v</span> umbral@103.199.187.160</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-code-line-numbers="|1-2|4-5|7-11|13-14"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a></a><span class="co"># 1. El servidor anuncia los métodos disponibles:</span></span>
+<span id="cb6-2"><a></a><span class="ex">debug1:</span> Authentications that can continue: publickey,password</span>
+<span id="cb6-3"><a></a></span>
+<span id="cb6-4"><a></a><span class="co"># 2. El cliente detecta la llave local y la ofrece:</span></span>
+<span id="cb6-5"><a></a><span class="ex">debug1:</span> Will attempt key: C:\\Users\\berto/.ssh/id_ed25519 ED25519 SHA256:ztzVw1mjwIuJpexHxr75Z0J5GXjhgltVFD1wit4tE6I</span>
+<span id="cb6-6"><a></a></span>
+<span id="cb6-7"><a></a><span class="co"># 3. El servidor verifica la firma y acepta:</span></span>
+<span id="cb6-8"><a></a><span class="ex">debug1:</span> Offering public key: C:\\Users\\berto/.ssh/id_ed25519 ED25519 SHA256:ztzVw1mjwIuJpexHxr75Z0J5GXjhgltVFD1wit4tE6I</span>
+<span id="cb6-9"><a></a><span class="ex">debug3:</span> send packet: type 50</span>
+<span id="cb6-10"><a></a><span class="ex">debug1:</span> Server accepts key: C:\\Users\\berto/.ssh/id_ed25519 ED25519 SHA256:ztzVw1mjwIuJpexHxr75Z0J5GXjhgltVFD1wit4tE6I</span>
+<span id="cb6-11"><a></a><span class="ex">debug3:</span> receive packet: type 60</span>
+<span id="cb6-12"><a></a></span>
+<span id="cb6-13"><a></a><span class="co"># 4. Autenticación exitosa — sin contraseña:</span></span>
+<span id="cb6-14"><a></a><span class="ex">Authenticated</span> to 103.199.187.160 <span class="er">(</span><span class="ex">[103.199.187.160]:22</span><span class="kw">)</span> <span class="ex">using</span> <span class="st">"publickey"</span>.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<aside class="notes">
+<p>El <code>SHA256:ztzVw1m...</code> que aparece en los pasos 2 y 3 es el fingerprint — el identificador corto de la llave. El cliente lo muestra para que sea legible en logs y en pantalla, pero internamente lo que viaja y se compara es la llave pública completa.</p>
+<p>El flujo real es: el cliente ofrece su llave pública → el servidor la busca en <code>authorized_keys</code> comparando llave completa, no fingerprint → si hay match, emite un desafío (datos aleatorios) → el cliente lo firma con su llave privada → el servidor verifica la firma con la llave pública → acceso concedido. La llave privada nunca sale de la máquina del cliente.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="perspectiva-del-servidor-varlogauth.log">Perspectiva del Servidor (<code>/var/log/auth.log</code>)</h3>
+<p>El demonio <code>sshd</code> busca la llave en <code>authorized_keys</code>, verifica la firma criptográfica y delega la apertura de sesión a <strong>PAM</strong>— sin que ninguna contraseña viaje por la red.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" data-code-line-numbers="2-3|5-6|8-9|11-12"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a></a><span class="co"># 1. sshd busca la llave en authorized_keys:</span></span>
+<span id="cb7-2"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1856155</span><span class="op">]</span><span class="ex">:</span> debug1: trying public key file /home/umbral/.ssh/authorized_keys</span>
+<span id="cb7-3"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1856155</span><span class="op">]</span><span class="ex">:</span> debug1: /home/umbral/.ssh/authorized_keys:3: matching key found: ED25519 SHA256:ztzVw1mjwIuJpexHxr75Z0J5GXjhgltVFD1wit4tE6I</span>
+<span id="cb7-4"><a></a></span>
+<span id="cb7-5"><a></a><span class="co"># 2. La firma es válida — acceso concedido:</span></span>
+<span id="cb7-6"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1856155</span><span class="op">]</span><span class="ex">:</span> Accepted publickey for umbral from 181.4.156.91 port 55230 ssh2: ED25519 SHA256:ztzVw1mjwIuJpexHxr75Z0J5GXjhgltVFD1wit4tE6I</span>
+<span id="cb7-7"><a></a></span>
+<span id="cb7-8"><a></a><span class="co"># 3. PAM abre la sesión (sin verificar contraseña):</span></span>
+<span id="cb7-9"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1856155</span><span class="op">]</span><span class="ex">:</span> pam_unix<span class="er">(</span><span class="ex">sshd:session</span><span class="kw">)</span><span class="bu">:</span> session opened for user umbral<span class="er">(</span><span class="va">uid</span><span class="op">=</span>1001<span class="kw">)</span> <span class="ex">by</span> umbral<span class="er">(</span><span class="va">uid</span><span class="op">=</span>0<span class="kw">)</span></span>
+<span id="cb7-10"><a></a></span>
+<span id="cb7-11"><a></a><span class="co"># 4. El sistema registra la nueva sesión:</span></span>
+<span id="cb7-12"><a></a><span class="ex">systemd-logind[695]:</span> New session 1968 of user umbral.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<aside class="notes">
+<p>sshd recorre <code>authorized_keys</code> línea por línea comparando la llave pública completa — no el fingerprint. El fingerprint en el log es solo el identificador legible del resultado.</p>
+<p>Cuando la firma es válida, sshd hace un <code>fork</code> — crea un proceso hijo con un PID único (acá <code>1856155</code>) aislado del demonio principal. Ese proceso hijo es el que se convierte en la sesión del usuario. Luego llama a PAM (<code>pam_unix session</code>) no para verificar contraseña sino para registrar la apertura de sesión: contabilidad, variables de entorno, permisos. La consola la levanta sshd; PAM la registra en el sistema.</p>
+<p>El PID único por sesión permite auditar y matar sesiones individuales sin afectar al demonio ni a otras conexiones activas.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="caso-1-análisis-y-trazabilidad">Caso 1: Análisis y Trazabilidad</h3>
+<ul>
+<li class="fragment"><strong>El desafío</strong> — el servidor manda un número aleatorio cifrado con tu llave pública. Solo quien tenga la privada puede descifrarlo y responder. Si la respuesta es correcta, acceso concedido. Ningún secreto viaja por la red.</li>
+<li class="fragment"><strong>Huella digital auditable</strong> — el fingerprint <code>SHA256:ztzVw1m...</code> queda registrado en el log del servidor, permitiendo identificar exactamente qué llave autenticó cada sesión.</li>
+<li class="fragment"><strong>Riesgo de exposición</strong> — si la llave privada se filtra (por ejemplo, subida accidentalmente a un repositorio), cualquier persona puede autenticarse como el dueño legítimo. Lo veremos en la demo práctica.</li>
+</ul>
+<aside class="notes">
+<p>No hay secreto compartido — el servidor tiene la llave pública y nunca necesita ver la privada. La auditoría es por fingerprint único, no por usuario + contraseña. El problema de escala (100 usuarios, 10 servidores) es el disparador del Caso 2.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="qué-pasa-si-tenés-100-usuarios" class="slide level2 center">
+<h2>¿Qué pasa si tenés 100 usuarios?</h2>
+<aside class="notes">
+<p>Dejar que la pregunta quede en el aire unos segundos. El problema es que con publickey pura, cada usuario necesita su llave registrada en cada servidor. Con 100 usuarios y 10 servidores son 1000 entradas que mantener — y si alguien se va, hay que actualizar todo a mano. El Caso 2 resuelve exactamente esto.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="caso-2-autenticación-por-certificado-ssh" class="slide level2 center">
+<h2>Caso 2: Autenticación por Certificado SSH</h2>
+</section>
+<section class="slide level2">
+
+<h3 id="autoridad-certificante-ca">Autoridad Certificante (CA)</h3>
+<p>Una entidad que <strong>firma certificados</strong> para avalar identidades.</p>
+<ul>
+<li>🏢 <strong>La CA</strong> genera un par de llaves propio (<code>ssh_ca</code> + <code>ssh_ca.pub</code>)</li>
+<li>🎫 <strong>Firma</strong> la llave pública del usuario → produce un certificado</li>
+<li>🖥️ <strong>El servidor</strong> solo necesita conocer <code>ssh_ca.pub</code> para validar cualquier certificado emitido por esa CA</li>
+</ul>
+<aside class="notes">
+<p>Analogía: es como una entrada con QR. Vos emitís las entradas, el servidor es el lector. El lector no necesita conocer a cada persona — solo sabe verificar entradas tuyas. Si la entrada venció o no la emitiste vos, la rechaza.</p>
+<p>La CA firma la llave <strong>pública</strong> del usuario — la privada nunca sale de la máquina del usuario. El servidor no guarda copia de cada certificado — solo usa <code>ssh_ca.pub</code> para verificar la firma de cualquiera que llegue.</p>
+<p>Diferencia con Caso 1: en Caso 1 dejás tu llave pública en el servidor (<code>authorized_keys</code>), el servidor te conoce individualmente. En Caso 2 tu llave pública nunca llega al servidor — el servidor solo conoce a la CA. Con el certificado podés entrar a cualquier servidor que confíe en ella.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="caso-2-configurando-la-ca">Caso 2: Configurando la CA</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a></a><span class="co"># 1. Generar el par de llaves de la CA en el servidor:</span></span>
+<span id="cb8-2"><a></a><span class="ex">$</span> ssh-keygen <span class="at">-t</span> ed25519 <span class="at">-f</span> ssh_ca <span class="at">-C</span> <span class="st">"ca@umbraldesarrollos"</span> <span class="at">-N</span> <span class="st">""</span></span>
+<span id="cb8-3"><a></a></span>
+<span id="cb8-4"><a></a><span class="co"># 2. Registrar la CA en sshd — el servidor ahora confía en ella:</span></span>
+<span id="cb8-5"><a></a><span class="ex">$</span> echo <span class="st">"TrustedUserCAKeys /etc/ssh/ca.pub"</span> <span class="kw">|</span> <span class="fu">sudo</span> tee <span class="at">-a</span> /etc/ssh/sshd_config</span>
+<span id="cb8-6"><a></a></span>
+<span id="cb8-7"><a></a><span class="co"># 3. Copiar la CA pública al directorio de sshd:</span></span>
+<span id="cb8-8"><a></a><span class="ex">$</span> cat ~/ssh-ca/ssh_ca.pub <span class="kw">|</span> <span class="fu">sudo</span> tee <span class="at">-a</span> /etc/ssh/ca.pub</span>
+<span id="cb8-9"><a></a></span>
+<span id="cb8-10"><a></a><span class="co"># 4. Reiniciar sshd para aplicar los cambios:</span></span>
+<span id="cb8-11"><a></a><span class="ex">$</span> sudo systemctl restart ssh</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote>
+<p><strong><code>-f ssh_ca</code></strong> — nombre del archivo de salida (<code>ssh_ca</code> y <code>ssh_ca.pub</code>). <strong><code>-C "ca@umbraldesarrollos"</code></strong> — identifica <em>quién es la CA</em> en los logs. Texto libre. <strong><code>-N ""</code></strong> — sin passphrase para la llave privada de la CA.</p>
+</blockquote>
+<aside class="notes">
+<p>Sobre el comando del paso 1 — <code>ssh-keygen -t ed25519 -f ssh_ca -C "ca@umbraldesarrollos" -N ""</code>:</p>
+<ul>
+<li><strong><code>-t ed25519</code></strong> — el algoritmo, igual que cuando generamos las llaves de usuario.</li>
+<li><strong><code>-f ssh_ca</code></strong> — nombre del archivo de salida. En lugar del default <code>id_ed25519</code>, genera <code>ssh_ca</code> (privada) y <code>ssh_ca.pub</code> (pública).</li>
+<li><strong><code>-C "ca@umbraldesarrollos"</code></strong> — comentario/etiqueta de texto libre. La autoridad es el par de llaves en sí, no este texto. Podés poner cualquier cosa: <code>ca@miempresa</code>, <code>admin@servidor</code>, lo que sea. Queda en texto plano al final de <code>ssh_ca.pub</code>. En los logs del servidor NO aparece este texto — aparece el fingerprint de la CA (<code>SHA256:RYDg7Bq...</code>). Se puede cambiar después con <code>ssh-keygen -c</code>.</li>
+<li><strong><code>-N ""</code></strong> — passphrase vacía. La llave privada de la CA no tiene contraseña. En producción se recomienda ponerle una.</li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="caso-2-firmando-el-certificado-de-usuario">Caso 2: Firmando el certificado de usuario</h3>
+<p>El cliente genera su par de llaves, nos manda la pública, la firmamos y se la devolvemos como certificado.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a></a><span class="co"># 1. El cliente manda su llave pública al servidor:</span></span>
+<span id="cb9-2"><a></a><span class="ex">PS</span><span class="op">&gt;</span> scp <span class="va">$env</span>:USERPROFILE<span class="dt">\.</span>ssh<span class="dt">\i</span>d_ed25519.pub umbral@103.199.187.160:~</span>
+<span id="cb9-3"><a></a></span>
+<span id="cb9-4"><a></a><span class="co"># 2. El servidor firma la llave pública con la CA (llave privada firma):</span></span>
+<span id="cb9-5"><a></a><span class="ex">$</span> ssh-keygen <span class="at">-s</span> ssh_ca <span class="at">-I</span> <span class="st">"berto@demo"</span> <span class="at">-n</span> umbral <span class="at">-V</span> +1w ~/id_ed25519.pub</span>
+<span id="cb9-6"><a></a></span>
+<span id="cb9-7"><a></a><span class="co"># 3. Certificado generado — válido 1 semana:</span></span>
+<span id="cb9-8"><a></a><span class="ex">Signed</span> user key id_ed25519-cert.pub: id <span class="st">"berto@demo"</span> serial 0 for umbral valid from 2026-06-06T22:36:00 to 2026-06-13T22:37:06</span>
+<span id="cb9-9"><a></a></span>
+<span id="cb9-10"><a></a><span class="co"># 4. El servidor devuelve el certificado al cliente:</span></span>
+<span id="cb9-11"><a></a><span class="ex">PS</span><span class="op">&gt;</span> scp umbral@103.199.187.160:~/id_ed25519-cert.pub <span class="va">$env</span>:USERPROFILE<span class="dt">\.</span>ssh<span class="dt">\</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<blockquote>
+<p><strong><code>-I "berto@demo"</code></strong> — el nombre en la entrada: identifica al titular del certificado. Aparece en los logs cuando se conecta. <strong><code>-n umbral</code></strong> — usuario del servidor al que este certificado da acceso. <strong><code>-V +1w</code></strong> — la fecha de vencimiento de la entrada. Podría ser <code>+1d</code>, <code>+2h</code>, etc.</p>
+</blockquote>
+<aside class="notes">
+<p>El cliente conserva su llave privada — nunca la manda. Solo manda la pública para que la firmemos. La CA firma con <code>ssh_ca</code> (privada); el servidor valida con <code>ssh_ca.pub</code> (pública).</p>
+<p>El flag <code>-s ssh_ca</code> indica qué llave privada firma — en este caso la de la CA.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="perspectiva-del-cliente-flujo-de-negociación-1">Perspectiva del Cliente — Flujo de negociación</h3>
+<p>SSH detecta automáticamente el certificado y lo ofrece al servidor.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a></a><span class="ex">PS</span><span class="op">&gt;</span> ssh <span class="at">-v</span> umbral@103.199.187.160</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a></a><span class="co"># 1. El servidor anuncia los métodos disponibles:</span></span>
+<span id="cb11-2"><a></a><span class="ex">debug1:</span> Authentications that can continue: publickey,password</span>
+<span id="cb11-3"><a></a></span>
+<span id="cb11-4"><a></a><span class="co"># 2. El cliente ofrece primero la llave pública — el servidor la rechaza:</span></span>
+<span id="cb11-5"><a></a><span class="ex">debug1:</span> Offering public key: C:\\Users\\berto/.ssh/id_ed25519 ED25519 SHA256:ztzVw1m...</span>
+<span id="cb11-6"><a></a><span class="ex">debug1:</span> Authentications that can continue: publickey,password</span>
+<span id="cb11-7"><a></a></span>
+<span id="cb11-8"><a></a><span class="co"># 3. El cliente ofrece el certificado — el servidor lo acepta:</span></span>
+<span id="cb11-9"><a></a><span class="ex">debug1:</span> Offering public key: C:\\Users\\berto/.ssh/id_ed25519 ED25519-CERT SHA256:ztzVw1m...</span>
+<span id="cb11-10"><a></a><span class="ex">debug1:</span> Server accepts key: C:\\Users\\berto/.ssh/id_ed25519 ED25519-CERT SHA256:ztzVw1m...</span>
+<span id="cb11-11"><a></a></span>
+<span id="cb11-12"><a></a><span class="co"># 4. Autenticación exitosa por certificado:</span></span>
+<span id="cb11-13"><a></a><span class="ex">Authenticated</span> to 103.199.187.160 <span class="er">(</span><span class="ex">[103.199.187.160]:22</span><span class="kw">)</span> <span class="ex">using</span> <span class="st">"publickey"</span>.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<aside class="notes">
+<p>El cliente primero intenta con la llave pública sola (ED25519) — el servidor la rechaza porque no está en <code>authorized_keys</code>. Este rechazo es esperado y correcto.</p>
+<p>Luego ofrece el certificado (ED25519-CERT) — el mismo fingerprint <code>SHA256:ztzVw1m...</code> porque es la misma llave, pero ahora viene acompañada del certificado firmado por la CA. El servidor lo acepta.</p>
+<p>Noten que el resultado final dice <code>using "publickey"</code> — SSH trata los certificados como una variante de autenticación por llave pública.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="perspectiva-del-servidor-varlogauth.log-1">Perspectiva del Servidor (<code>/var/log/auth.log</code>)</h3>
+<p>El servidor verifica la firma de la CA, valida el certificado y abre la sesión — sin consultar <code>authorized_keys</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a></a><span class="co"># 1. La llave pública sola es rechazada — no está en authorized_keys:</span></span>
+<span id="cb12-2"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1947778</span><span class="op">]</span><span class="ex">:</span> debug1: userauth_pubkey: publickey test pkalg ssh-ed25519 pkblob ED25519 SHA256:ztzVw1m... <span class="pp">[</span><span class="ss">preauth</span><span class="pp">]</span></span>
+<span id="cb12-3"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1947778</span><span class="op">]</span><span class="ex">:</span> Failed publickey for umbral from 181.4.156.91 port 55917 ssh2: ED25519 SHA256:ztzVw1m...</span>
+<span id="cb12-4"><a></a></span>
+<span id="cb12-5"><a></a><span class="co"># 2. El certificado es verificado contra la CA registrada:</span></span>
+<span id="cb12-6"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1947778</span><span class="op">]</span><span class="ex">:</span> debug1: userauth_pubkey: publickey test pkalg ssh-ed25519-cert-v01@openssh.com pkblob ED25519-CERT SHA256:ztzVw1m... CA ED25519 SHA256:RYDg7BqTaGkZjlBhstyS1gYI51sADkXrxkGQUQmFRNk <span class="pp">[</span><span class="ss">preauth</span><span class="pp">]</span></span>
+<span id="cb12-7"><a></a></span>
+<span id="cb12-8"><a></a><span class="co"># 3. Certificado válido — acceso concedido:</span></span>
+<span id="cb12-9"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1947778</span><span class="op">]</span><span class="ex">:</span> Accepted certificate ID <span class="st">"berto@demo"</span> <span class="er">(</span><span class="ex">serial</span> 0<span class="kw">)</span> <span class="ex">signed</span> by ED25519 CA SHA256:RYDg7BqTaGkZjlBhstyS1gYI51sADkXrxkGQUQmFRNk via /etc/ssh/ca.pub</span>
+<span id="cb12-10"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1947778</span><span class="op">]</span><span class="ex">:</span> Accepted publickey for umbral from 181.4.156.91 port 55917 ssh2: ED25519-CERT SHA256:ztzVw1m... ID berto@demo <span class="er">(</span><span class="ex">serial</span> 0<span class="kw">)</span> <span class="ex">CA</span> ED25519 SHA256:RYDg7BqTaGkZjlBhstyS1gYI51sADkXrxkGQUQmFRNk</span>
+<span id="cb12-11"><a></a></span>
+<span id="cb12-12"><a></a><span class="co"># 4. PAM abre la sesión:</span></span>
+<span id="cb12-13"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1947778</span><span class="op">]</span><span class="ex">:</span> pam_unix<span class="er">(</span><span class="ex">sshd:session</span><span class="kw">)</span><span class="bu">:</span> session opened for user umbral<span class="er">(</span><span class="va">uid</span><span class="op">=</span>1001<span class="kw">)</span> <span class="ex">by</span> umbral<span class="er">(</span><span class="va">uid</span><span class="op">=</span>0<span class="kw">)</span></span>
+<span id="cb12-14"><a></a><span class="ex">systemd-logind[695]:</span> New session 1984 of user umbral.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<aside class="notes">
+<p>Paso 1 — la llave pública sola es rechazada: no está en <code>authorized_keys</code>. El servidor ni la busca — en este modo no hay <code>authorized_keys</code>.</p>
+<p>Paso 2 — el servidor verifica el certificado contra la CA: usa <code>ssh_ca.pub</code> para validar la firma. Si la firma es válida y el certificado no expiró, sigue.</p>
+<p>Paso 3 — en el log aparece <code>"berto@demo"</code> (el <code>-I</code> que pusimos al firmar) y el fingerprint de la CA (<code>SHA256:RYDg7Bq...</code>). El comentario <code>-C "ca@umbraldesarrollos"</code> NO aparece acá — solo el fingerprint. Con estos dos datos podés auditar quién se conectó y quién lo autorizó.</p>
+<p>Paso 4 — igual que en el Caso 1: sshd hace el fork, PAM registra la sesión.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="caso-2-análisis-y-trazabilidad">Caso 2: Análisis y Trazabilidad</h3>
+<ul>
+<li class="fragment"><strong>Respuesta al problema de los 100 usuarios</strong> — un solo archivo en cada servidor (<code>ca.pub</code>) reemplaza a <code>authorized_keys</code> con 100 entradas. Agregás o removés usuarios sin tocar ningún servidor.</li>
+<li class="fragment"><strong>Acceso con fecha de vencimiento</strong> — cuando el certificado expira, el acceso se corta solo. Sin revocar nada, sin actualizar nada.</li>
+<li class="fragment"><strong>Trazabilidad completa</strong> — en los logs sabés quién entró (<code>berto@demo</code>) y quién lo autorizó (fingerprint de la CA). Dos niveles de auditoría.</li>
+<li class="fragment"><strong>El riesgo</strong> — si se filtra la llave privada de la CA, el atacante puede emitir certificados para cualquier usuario. Es el activo más crítico del sistema.</li>
+</ul>
+<aside class="notes">
+<p>En los logs aparecen dos identidades: <code>berto@demo</code> es el usuario que se conecta, y <code>SHA256:RYDg7Bq...</code> es el fingerprint de la CA — o sea, umbral es quien generó y firmó el certificado. El log te dice quién entró y quién lo autorizó a entrar.</p>
+<p>Con authorized_keys, si un empleado se va necesitás actualizar cada servidor manualmente. Con CA, simplemente no renovás su certificado — cuando vence, el acceso se corta automáticamente en todos los servidores sin tocar ninguno. En flotas de 100+ servidores, eso es la diferencia entre un minuto y horas de trabajo.</p>
+<p>El último bullet conecta con la demo: si alguien pregunta qué pasa si se filtra la CA, es el peor escenario posible — hay que regenerarla y actualizar <code>ca.pub</code> en todos los servidores.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="y-si-no-tenés-nada-de-lo-anterior" class="slide level2 center">
+<h2>¿Y si no tenés nada de lo anterior?</h2>
+</section>
+<section id="caso-3-autenticación-por-contraseña" class="slide level2 center">
+<h2>Caso 3: Autenticación por Contraseña</h2>
+<aside class="notes">
+<p>Dejar que la pregunta quede en el aire. Sin par de llaves, sin CA, sin certificado — solo un usuario y una contraseña. Es el método más común y el menos seguro. El Caso 3 muestra por qué los casos anteriores existen.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="perspectiva-del-cliente-flujo-de-negociación-2">Perspectiva del Cliente — Flujo de negociación</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a></a><span class="co"># 1. El servidor anuncia los métodos de autenticación disponibles:</span></span>
+<span id="cb13-2"><a></a><span class="ex">debug1:</span> Authentications that can continue: publickey,password</span>
+<span id="cb13-3"><a></a></span>
+<span id="cb13-4"><a></a><span class="co"># 2. El cliente intenta primero con llaves públicas:</span></span>
+<span id="cb13-5"><a></a><span class="ex">debug1:</span> Next authentication method: publickey</span>
+<span id="cb13-6"><a></a><span class="ex">debug1:</span> Trying private key: C:\\Users\\berto/.ssh/id_rsa</span>
+<span id="cb13-7"><a></a><span class="ex">debug1:</span> Trying private key: C:\\Users\\berto/.ssh/id_ed25519</span>
+<span id="cb13-8"><a></a><span class="co"># ... (ninguna está autorizada en el servidor)</span></span>
+<span id="cb13-9"><a></a></span>
+<span id="cb13-10"><a></a><span class="co"># 3. El cliente cae al método por contraseña:</span></span>
+<span id="cb13-11"><a></a><span class="ex">debug1:</span> Next authentication method: password</span>
+<span id="cb13-12"><a></a><span class="ex">umbral@103.199.187.160</span><span class="st">'s password:</span></span>
+<span id="cb13-13"><a></a><span class="st">Authenticated to 103.199.187.160 ([103.199.187.160]:22) using "password".</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<aside class="notes">
+<p>SSH intenta con llaves públicas primero aunque no haya ninguna configurada — es el comportamiento por defecto, prioriza siempre el método más seguro.</p>
+<p>Cuando ninguna llave funciona, cae a contraseña. Acá aparece la diferencia clave con los casos anteriores: la contraseña es un secreto que <em>existe</em> y que el cliente le manda al servidor. Viaja cifrada dentro del canal SSH, pero existe — y eso la hace vulnerable a fuerza bruta si el servidor está expuesto en internet.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section class="slide level2">
+
+<h3 id="perspectiva-del-servidor-varlogauth.log-2">Perspectiva del Servidor (<code>/var/log/auth.log</code>)</h3>
+<p>El demonio <code>sshd</code> delega la validación al módulo <strong>PAM</strong> <em>(Pluggable Authentication Modules)</em><sup>1</sup> y genera la sesión.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a></a><span class="co"># 1. El demonio SSH recibe la petición de autenticación:</span></span>
+<span id="cb14-2"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1387699</span><span class="op">]</span><span class="ex">:</span> debug1: userauth-request for user umbral service ssh-connection method password</span>
+<span id="cb14-3"><a></a></span>
+<span id="cb14-4"><a></a><span class="co"># 2. PAM verifica la contraseña y aprueba el acceso:</span></span>
+<span id="cb14-5"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1387699</span><span class="op">]</span><span class="ex">:</span> PAM: password authentication accepted for umbral</span>
+<span id="cb14-6"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1387699</span><span class="op">]</span><span class="ex">:</span> Accepted password for umbral from 181.4.156.91 port 62968 ssh2</span>
+<span id="cb14-7"><a></a></span>
+<span id="cb14-8"><a></a><span class="co"># 3. Se asigna un PID único y se abre la sesión interactiva:</span></span>
+<span id="cb14-9"><a></a><span class="va">sshd</span><span class="op">[</span><span class="dv">1387699</span><span class="op">]</span><span class="ex">:</span> pam_unix<span class="er">(</span><span class="ex">sshd:session</span><span class="kw">)</span><span class="bu">:</span> session opened for user umbral<span class="er">(</span><span class="va">uid</span><span class="op">=</span>1001<span class="kw">)</span> <span class="ex">by</span> umbral<span class="er">(</span><span class="va">uid</span><span class="op">=</span>0<span class="kw">)</span></span>
+<span id="cb14-10"><a></a><span class="ex">systemd-logind[695]:</span> New session 1903 of user umbral.</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<aside class="notes">
+<p>A diferencia del Caso 1, acá PAM hace dos cosas: verifica la contraseña consultando <code>/etc/shadow</code> y abre la sesión. En los casos anteriores solo abría la sesión — la autenticación ya la había resuelto la criptografía.</p>
+<p>El log no muestra fingerprint ni certificado — solo usuario, IP y método <code>password</code>. Menos información para auditar quién se conectó y desde dónde.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<aside><ol class="aside-footnotes"><li id="fn2"><p>PAM (Pluggable Authentication Modules)** es una capa de abstracción del sistema operativo que permite configurar métodos de autenticación de forma modular, sin modificar las aplicaciones. En este caso, <code>sshd</code> le delega la verificación de contraseña a PAM, que internamente consulta <code>/etc/shadow</code>. Más info: <a href="https://wiki.archlinux.org/title/PAM_(Espa%C3%B1ol)">wiki.archlinux.org/title/PAM_(Español)</a></p></li></ol></aside></section>
+<section class="slide level2">
+
+<h3 id="caso-3-análisis-y-trazabilidad">Caso 3: Análisis y Trazabilidad</h3>
+<ul>
+<li class="fragment"><strong>Comportamiento esperado</strong> — SSH prioriza seguridad intentando con <code>publickey</code> antes de degradar a <code>password</code>.</li>
+<li class="fragment"><strong>Trazabilidad y aislamiento</strong> — cada conexión genera un proceso hijo (PID <code>1387699</code>) aislado del demonio principal, auditable de forma individual.</li>
+<li class="fragment"><strong>Vulnerabilidad crítica</strong> — la contraseña es un secreto que existe y viaja. Deja el puerto 22 expuesto a ataques de fuerza bruta.</li>
+</ul>
+<aside class="notes">
+<p>Después de ver los dos métodos criptográficos, este caso muestra por qué la contraseña es el método menos robusto. En producción, lo ideal es deshabilitar PasswordAuthentication en sshd_config completamente y forzar publickey o certificados. La gran diferencia con los casos anteriores: aquí hay un secreto que viaja — cifrado dentro del canal SSH, pero que existe y puede ser atacado por fuerza bruta si el servidor es accesible desde internet.</p>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+<!-- ============================================================ -->
+<!-- FOOTNOTES — siempre al final del archivo                     -->
+<!-- ============================================================ -->
+</section>
+<section class="slide level2">
+
+</section></section>
+<section>
+<section id="demos" class="title-slide slide level1 center">
+<h1>Demo(s)</h1>
+
+</section>
+<section id="demo-1-ssh-local-port-forwarding" class="slide level2">
+<h2>Demo 1: <code>SSH Local Port Forwarding</code></h2>
+<blockquote>
+<p>Permite enrutar tráfico de forma segura desde un PC local a un servidor remoto a través de un tunel SSH</p>
+</blockquote>
+<ul>
+<li>Aplicación:
+<ul>
+<li>Acceder de forma segura a servicios internos que no están expuestos a internet</li>
+<li>Debuggear servicios sin exponer el tráfico</li>
+</ul></li>
+</ul>
+</section>
+<section id="demo-1-configuración-local" class="slide level2">
+<h2>Demo 1: Configuración local</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a></a><span class="fu">ssh</span> <span class="at">-N</span> <span class="at">-i</span> <span class="pp">[</span><span class="ss">archivo_identidad</span><span class="pp">]</span> <span class="dt">\</span></span>
+<span id="cb15-2"><a></a>    <span class="at">-L</span> <span class="pp">[</span><span class="ss">puerto_local</span><span class="pp">]</span>:<span class="pp">[</span><span class="ss">host_destino</span><span class="pp">]</span>:<span class="pp">[</span><span class="ss">puerto_destino</span><span class="pp">]</span> <span class="dt">\</span></span>
+<span id="cb15-3"><a></a>    <span class="at">-p</span> <span class="pp">[</span><span class="ss">puerto_ssh_remoto</span><span class="pp">]</span> <span class="dt">\</span></span>
+<span id="cb15-4"><a></a>    <span class="pp">[</span><span class="ss">usuario</span><span class="pp">]</span>@<span class="pp">[</span><span class="ss">servidor_SSH</span><span class="pp">]</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><br></p>
+<blockquote>
+<h4 id="opciones">Opciones:</h4>
+</blockquote>
+<ul>
+<li><code>-N</code>: no ejecutar comando remoto</li>
+<li><code>-i</code>: especificar clave privada</li>
+<li><code>-L</code>: <u><strong>forwardeo al puerto local</strong></u></li>
+<li><code>-p</code>: puerto servidor SSH</li>
+</ul>
+</section>
+<section id="demo-1-diagrama-de-red" class="slide level2 smaller">
+<h2>Demo 1: Diagrama de red</h2>
+
+<img data-src="figs/demo-1.svg" class="r-stretch"><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a aria-hidden="true" tabindex="-1"></a>    <span class="fu">ssh</span> <span class="at">-N</span> <span class="at">-i</span> <span class="pp">[</span><span class="ss">archivo_identidad</span><span class="pp">]</span> <span class="at">-L</span> <span class="pp">[</span><span class="ss">puerto_local</span><span class="pp">]</span>:<span class="pp">[</span><span class="ss">host_destino</span><span class="pp">]</span>:<span class="pp">[</span><span class="ss">puerto_destino</span><span class="pp">]</span> <span class="at">-p</span> <span class="pp">[</span><span class="ss">puerto_ssh_remoto</span><span class="pp">]</span> <span class="pp">[</span><span class="ss">usuario</span><span class="pp">]</span>@<span class="pp">[</span><span class="ss">servidor_SSH</span><span class="pp">]</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a aria-hidden="true" tabindex="-1"></a>    <span class="fu">ssh</span> <span class="at">-N</span> <span class="at">-i</span> ~/.ssh/id_ed25519 <span class="at">-L</span> 8080:nginx:80 <span class="at">-p</span> 22000 ubuntu@54.90.211.82</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<aside class="notes">
+<ul>
+<li>Localmente se configura el forwardeo</li>
+<li>En el navegador no hay que cambiar nada</li>
+<li>Solo se accede al servicio apuntado</li>
+<li>Dentro de la configuración del <code>EC2</code> hay que habilitar el puerto <code>22000</code></li>
+<li>Abrir el navegador y mostrar <code>http://localhost:8080</code></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="demo-2-dynamic-port-forwarding" class="slide level2">
+<h2>Demo 2: <code>Dynamic Port Forwarding</code></h2>
+<blockquote>
+<p>Permite enrutar cualquier tráfico de forma segura desde un PC local a una ubicación remota (similar a lo que se logra con <code>VPN</code>)</p>
+</blockquote>
+<ul>
+<li>Permite:
+<ul>
+<li>Evitar firewalls o filtros de red</li>
+<li>Protección de privacidad</li>
+</ul></li>
+</ul>
+</section>
+<section id="demo-2-configuración-local" class="slide level2">
+<h2>Demo 2: Configuración local</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a></a><span class="fu">ssh</span> <span class="at">-N</span> <span class="at">-i</span> <span class="pp">[</span><span class="ss">archivo_identidad</span><span class="pp">]</span> <span class="dt">\</span></span>
+<span id="cb18-2"><a></a>    <span class="at">-D</span> <span class="pp">[</span><span class="ss">puerto_local</span><span class="pp">]</span> <span class="dt">\</span></span>
+<span id="cb18-3"><a></a>    <span class="at">-p</span> <span class="pp">[</span><span class="ss">puerto_ssh_remoto</span><span class="pp">]</span> <span class="dt">\</span></span>
+<span id="cb18-4"><a></a>    <span class="pp">[</span><span class="ss">usuario</span><span class="pp">]</span>@<span class="pp">[</span><span class="ss">servidor_SSH</span><span class="pp">]</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<p><br></p>
+<blockquote>
+<h4 id="opciones-1">Opciones:</h4>
+</blockquote>
+<ul>
+<li><code>-N</code>: no ejecutar comando remoto</li>
+<li><code>-i</code>: especificar clave privada</li>
+<li><code>-D</code>: <u><strong>servidor proxy SOCKS</strong></u></li>
+<li><code>-p</code>: puerto servidor SSH</li>
+</ul>
+</section>
+<section id="demo-2-diagrama-de-red" class="slide level2 smaller">
+<h2>Demo 2: Diagrama de red</h2>
+
+<img data-src="figs/demo-2.svg" class="r-stretch"><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a aria-hidden="true" tabindex="-1"></a>    <span class="fu">ssh</span> <span class="at">-N</span> <span class="at">-i</span> ~/.ssh/id_ed25519 <span class="at">-D</span> 8080 <span class="at">-p</span> 22000 ubuntu@54.90.211.82</span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<aside class="notes">
+<ul>
+<li>Localmente se configura el forwardeo</li>
+<li>En el navegador hay que configurar el proxy a localhost:8080</li>
+<li>Acceso completo a través de la ubicación remota</li>
+<li>Se puede acceder al <code>nginx</code> con <code>172.18.0.3</code> o <code>http://nginx</code></li>
+<li>Se puede comprobar el cambio de IP con <code>ipecho.net</code></li>
+</ul>
+<style type="text/css">
+        span.MJX_Assistive_MathML {
+          position:absolute!important;
+          clip: rect(1px, 1px, 1px, 1px);
+          padding: 1px 0 0 0!important;
+          border: 0!important;
+          height: 1px!important;
+          width: 1px!important;
+          overflow: hidden!important;
+          display:block!important;
+      }</style></aside>
+</section>
+<section id="section-2" class="slide level2 center">
+<h2></h2>
+<div class="fragment">
+<h3 id="preguntas">¿Preguntas?</h3>
+</div>
+</section>
+<section id="muchas-gracias" class="slide level2 center">
+<h2>Muchas gracias</h2>
+
+
+</section></section>
+
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+<p>Facultad de Ingeniería y Ciencias Hídricas · Universidad Nacional del Litoral</p>
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease-in-out",
+'autoAnimateDuration': 0.6,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":false},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: false,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'slide',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'fast',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1280,
+
+        height: 720,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdn.jsdelivr.net/npm/mathjax@2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copiado");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copiado");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+          const outerScaffold = trigger.parentElement.cloneNode(true);
+          const codeEl = outerScaffold.querySelector('code');
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
